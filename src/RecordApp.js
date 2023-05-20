@@ -8,8 +8,9 @@ const HomeTeam = "Red Sox"
 
 const ContainerStyle = styled.div`
   display: flex;
-  //box-shadow: 10px 5px 5px black;
+  align-items: center;
   width: 100%;
+  flex-direction: column;
 `
 
 const HeaderStyle = styled.div`
@@ -37,23 +38,28 @@ const TableStyle = styled.div`
   align-self: center;
   align-items: center;
   text-align: center;
-  ;
 `
 
 const ButtonStyle = styled.button`
   color: #012311;
   background-color: coral;
   font-size: 20px;
-  ;
 `
 
-const CurrentInningStyle = styled.div`
+const CurrentInningStyle = styled.text`
   color: red;
-  ;
 `
-const NotCurrentInningStyle = styled.div`
+const NotCurrentInningStyle = styled.text`
   color: black;
-  ;
+`
+
+const OutSign = styled.div`
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 5px;
+  background-color: lightgrey;
 `
 
 const Header = () => (
@@ -80,6 +86,40 @@ const Inning = ({ currentInning, targetInning }) => {
           {targetInning}
         </NotCurrentInningStyle>
       </td>
+    )
+  }
+}
+
+const PrintGuestTeam = ({isBottom}) => {
+  if (isBottom === false) {
+    return (
+       <CurrentInningStyle>
+        <td>{GuestTeam}</td>
+       </CurrentInningStyle>
+        
+    )
+  } else {
+    return (
+      <NotCurrentInningStyle>
+        <td key={GuestTeam}>{GuestTeam}</td>
+      </NotCurrentInningStyle>
+        
+    )
+  }
+}
+
+const PrintHomeTeam = ({isBottom}) => {
+  if (isBottom === true) {
+    return (
+      <CurrentInningStyle>
+      <td>{HomeTeam}</td>
+     </CurrentInningStyle>
+    )
+  } else {
+    return (
+      <NotCurrentInningStyle>
+        <td key={HomeTeam}>{HomeTeam}</td>
+      </NotCurrentInningStyle>
     )
   }
 }
@@ -120,10 +160,9 @@ const Score = (props) => {
 }
 
 const ScoreBoard = (props) => {
-  const { currentInning } = props
+  const { currentInning, isBottom, GuestScores, HomeScores } = props
   // const Innings = Array.from({ length: 9 }, (_, index) => index);
-  const GuestScores = Array.from({ length: 9 }, (_, index) => -1);
-  const homeScores = Array.from({ length: 9 }, (_, index) => -1);
+  
   return (
     <div>
       <TableStyle>
@@ -131,14 +170,14 @@ const ScoreBoard = (props) => {
           <tbody>
             <InningsRow currentInning={currentInning} />
             <tr>
-              <td key={GuestTeam}>{GuestTeam}</td>
+              <PrintGuestTeam isBottom={isBottom} />
               {GuestScores.map((score, index) => (
                 <Score key={index} score={score} />
               ))}
             </tr>
             <tr>
-              <td key={HomeTeam}>{HomeTeam}</td>
-              {homeScores.map((score, index) => (
+              <PrintHomeTeam isBottom={isBottom} />
+              {HomeScores.map((score, index) => (
                 <Score key={index} score={score} />
               ))}
             </tr>
@@ -146,6 +185,21 @@ const ScoreBoard = (props) => {
         </table>
       </TableStyle>
     </div>
+  )
+}
+
+const Outs = () => {
+  return (
+    <ContainerStyle>
+    <div>
+      <h3 align="center">
+        Outs
+      </h3>
+      <OutSign />
+      <OutSign />
+      <OutSign />
+    </div>
+    </ContainerStyle>
   )
 }
 
@@ -162,12 +216,19 @@ const InputArea = (props) => {
 
 function RecordApp() {
   const [currentInning, setCurrentInning] = useState(1);
-  const [isBottom, setBottom] = useState(0); 
+  const [isBottom, setBottom] = useState(false); 
+  const GuestScores = Array.from({ length: 9 }, (_, index) => -1);
+  const HomeScores = Array.from({ length: 9 }, (_, index) => -1);
 
-  const toNextInning = () => {
-    if (currentInning === 9) {
+  const changeInning = () => {
+    if (isBottom === false) {
+      setBottom(true)
+    }
+    else if (currentInning === 9) {
+      setBottom(false)
       setCurrentInning(1);
     } else {
+      setBottom(false)
       setCurrentInning(currentInning + 1);
     }
   }
@@ -176,9 +237,13 @@ function RecordApp() {
       <div>
         <Header />
         <ScoreboardStyle />
-        <ScoreBoard currentInning={currentInning} isBottom={isBottom} />
-        
-        <ButtonStyle onClick={toNextInning}>
+        <ScoreBoard 
+          currentInning={currentInning} 
+          isBottom={isBottom} 
+          GuestScores={GuestScores} 
+          HomeScores={HomeScores} />
+        <Outs />
+        <ButtonStyle onClick={changeInning}>
           Change
         </ButtonStyle>
       </div>
