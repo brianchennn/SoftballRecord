@@ -8,19 +8,25 @@ const HomeTeam = "Red Sox"
 
 const ContainerStyle = styled.div`
   display: flex;
+  margin-up: 100px;
+  margin-bottom: 10px;
   align-items: center;
+  text-align: center;
   width: 100%;
-  flex-direction: column;
 `
-
+const InputStyle = styled.div`
+  font-font-size-adjust: 0.90;
+  font-family: 微軟正黑體;
+  margin-left: 20px;
+  margin-right: 20px;
+`
 const HeaderStyle = styled.div`
-  background-color: #ededed;
-  font-size: 20px;
+  font-color: #010101;
+  font-size: 40px;
   width: 100%;
   text-align: center;
   ;
 `
-
 const ScoreboardStyle = styled.div`
  display: flex;
  background-color: pink;
@@ -29,7 +35,6 @@ const ScoreboardStyle = styled.div`
  border:1px solid #000;
  ;
 `
-
 const TableStyle = styled.div`
   font-size: 30px;
   border-collapse: collapse;
@@ -39,20 +44,30 @@ const TableStyle = styled.div`
   align-items: center;
   text-align: center;
 `
-
 const ButtonStyle = styled.button`
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
   color: #012311;
-  background-color: coral;
+  height: 40px;
+  width: 100px;
+  margin-left: 40px;
+  margin-right: 40px;
+  margin-up: 40px;
+  margin-bottom: 40px;
   font-size: 20px;
+  text-align: center;
+  background-color: ${(bg) => bg};
+  &:hover {
+    background-color: lightblue;
+  };
+  
 `
-
-const CurrentInningStyle = styled.text`
+const CurrentInningStyle = styled.div`
   color: red;
 `
-const NotCurrentInningStyle = styled.text`
+const NotCurrentInningStyle = styled.div`
   color: black;
 `
-
 const OutSign = styled.div`
   display: inline-block;
   width: 20px;
@@ -60,6 +75,15 @@ const OutSign = styled.div`
   border-radius: 50%;
   margin-right: 5px;
   background-color: lightgrey;
+`
+
+const OutSign2 = styled.div`
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 5px;
+  background-color: yellow;
 `
 
 const Header = () => (
@@ -90,53 +114,39 @@ const Inning = ({ currentInning, targetInning }) => {
   }
 }
 
-const PrintGuestTeam = ({isBottom}) => {
+const PrintGuestTeam = ({ isBottom }) => {
   if (isBottom === false) {
     return (
-       <CurrentInningStyle>
-        <td>{GuestTeam}</td>
-       </CurrentInningStyle>
-        
+        <td><font color="red">{GuestTeam}</font></td>
     )
   } else {
     return (
-      <NotCurrentInningStyle>
         <td key={GuestTeam}>{GuestTeam}</td>
-      </NotCurrentInningStyle>
-        
     )
   }
 }
 
-const PrintHomeTeam = ({isBottom}) => {
+const PrintHomeTeam = ({ isBottom }) => {
   if (isBottom === true) {
     return (
-      <CurrentInningStyle>
-      <td>{HomeTeam}</td>
-     </CurrentInningStyle>
+      <td><font color="red">{HomeTeam}</font></td>
     )
   } else {
-    return (
-      <NotCurrentInningStyle>
+    return (  
         <td key={HomeTeam}>{HomeTeam}</td>
-      </NotCurrentInningStyle>
     )
   }
 }
 
 const InningsRow = ({ currentInning }) => {
+  const Innings = Array.from({ length: 9 }, (_, index) => index);
   return (
     <tr>
       <td></td>
-      <Inning currentInning={currentInning} targetInning={1} />
-      <Inning currentInning={currentInning} targetInning={2} />
-      <Inning currentInning={currentInning} targetInning={3} />
-      <Inning currentInning={currentInning} targetInning={4} />
-      <Inning currentInning={currentInning} targetInning={5} />
-      <Inning currentInning={currentInning} targetInning={6} />
-      <Inning currentInning={currentInning} targetInning={7} />
-      <Inning currentInning={currentInning} targetInning={8} />
-      <Inning currentInning={currentInning} targetInning={9} />
+      {Innings.map((score, index) => (
+        <Inning key={index} currentInning={currentInning} targetInning={index + 1} />
+      ))}
+
       <td width="70px">R</td>
       <td width="70px">H</td>
       <td width="70px">E</td>
@@ -162,7 +172,7 @@ const Score = (props) => {
 const ScoreBoard = (props) => {
   const { currentInning, isBottom, GuestScores, HomeScores } = props
   // const Innings = Array.from({ length: 9 }, (_, index) => index);
-  
+
   return (
     <div>
       <TableStyle>
@@ -188,35 +198,163 @@ const ScoreBoard = (props) => {
   )
 }
 
-const Outs = () => {
+const OutBoard = ({currentOuts}) => {
+  const O1 = Array.from({length: currentOuts}, (_, index) => index)
+  const O2 = Array.from({length: 3 - currentOuts}, (_, index) => index)
   return (
     <ContainerStyle>
-    <div>
-      <h3 align="center">
-        Outs
-      </h3>
-      <OutSign />
-      <OutSign />
-      <OutSign />
-    </div>
+      <div>
+        <h3 align="center">
+          Outs
+        </h3>
+        {O1.map((op, index) => (
+          <OutSign2 key={index}> </OutSign2>
+        ))}
+        {O2.map((op, index) => (
+          <OutSign key={index+3}></OutSign>
+        ))}
+      </div>
     </ContainerStyle>
   )
 }
 
-const InputArea = (props) => {
-  
+const ButtonArea = ({ changeInning }) => {
+  const bg = 'blue'
   return (
     <>
-      <ButtonStyle onclick={props.toNextInning}>
-          Change
+      <ButtonStyle onClick={changeInning} bg={bg}>
+        Change
       </ButtonStyle>
+      <ButtonStyle bg={bg}>
+        Submit
+      </ButtonStyle>
+      <ButtonStyle bg={bg}>
+        Button3
+      </ButtonStyle>
+    </>
+  )
+}
+
+const BattingOrder = ({setBattingOrder}) => {
+
+  const Options = Array.from({ length: 11 }, (_, index) => index + 1)
+  return (
+    <InputStyle>
+      <label>棒次: </label>
+      <select>
+        {Options.map((op, index) => (
+          <option key={index}>{op}</option>
+        ))}
+      </select>
+    </InputStyle>
+  )
+}
+
+const PlayerNumber = () => {
+  return (
+    <InputStyle>
+      <label>背號: </label>
+      <input>
+
+      </input>
+    </InputStyle>
+  )
+}
+
+const Direction = () => {
+  const PositionCode = ['1 (投手)', '2 (捕手)', '3 (一壘)', '4 (二壘)', '5 (三壘)', '6 (游擊)', '7 (左外)', '8 (中外)', '9 (右外)', '10 (自由)'];
+  return (
+    <InputStyle>
+      <label>打擊方向: </label>
+      <select>
+        {PositionCode.map((position, index) => (
+          <option key={index}>
+            {position}
+          </option>
+        ))}
+      </select>
+    </InputStyle>
+  )
+}
+
+const BattingResult = () => {
+  const Result = ['GO (滾地出局)', 'FO (飛球出局)', 'FC (野手選擇)', 'E (對手失誤)', 'K (被三振)', 'BB (保送)', 'SF (高飛犧牲打)', '1B (一壘安打)', '2B (二壘安打)', '3B (三壘安打)', 'HR (全壘打)'];
+  return (
+    <InputStyle>
+      <label>打擊結果: </label>
+      <select>
+        {Result.map((result, index) => (
+          <option key={index}>
+            {result}
+          </option>
+        ))}
+      </select>
+    </InputStyle>
+  )
+}
+
+const Rbi = () => {
+  const Result = ['0 RBI', '1 RBI', '2 RBI', '3 RBI', '4 RBI'];
+  return (
+    <InputStyle>
+      <label>打點: </label>
+      <select>
+        {Result.map((result, index) => (
+          <option key={index}>
+            {result}
+          </option>
+        ))}
+      </select>
+    </InputStyle>
+  )
+}
+
+const OutsSelect = () => {
+  const Result = ['0', '1', '2', '3'];
+  return (
+    <InputStyle>
+      <label>出局: </label>
+      <select>
+        {Result.map((result, index) => (
+          <option key={index}>
+            {result}
+          </option>
+        ))}
+      </select>
+    </InputStyle>
+  )
+}
+
+
+const PaFormArea = () => {
+  const [battingOrder, setBattingOrder] = useState(0)
+  const [playerNumber, setPlayerNumber] = useState("")
+  const [direction, setDirection] = useState("")
+  const [battingResult, setBattingResult] = useState("")
+  const [outs, setOuts] = useState(0)
+  const [rbi, setRbi] = useState("")
+
+  const Options = Array.from({ length: 11 }, (_, index) => index + 1)
+  return (
+    <>
+      <ButtonStyle>
+        送出
+      </ButtonStyle>
+      <div></div>
+      <BattingOrder setBattingOrder={setBattingOrder} />
+      <PlayerNumber setPlayerNumber={setPlayerNumber} />
+      <Direction setDirection={setDirection} />
+      <BattingResult setBattingResult={setBattingResult} />
+      <OutsSelect setOuts={setOuts} />
+      <Rbi setRbi={setRbi} />
     </>
   )
 }
 
 function RecordApp() {
   const [currentInning, setCurrentInning] = useState(1);
-  const [isBottom, setBottom] = useState(false); 
+  const [currentOuts, setCurrentOuts] = useState(0);
+  const [isBottom, setBottom] = useState(false);
   const GuestScores = Array.from({ length: 9 }, (_, index) => -1);
   const HomeScores = Array.from({ length: 9 }, (_, index) => -1);
 
@@ -236,17 +374,20 @@ function RecordApp() {
     <>
       <div>
         <Header />
+        <ButtonArea changeInning={changeInning} />
         <ScoreboardStyle />
-        <ScoreBoard 
-          currentInning={currentInning} 
-          isBottom={isBottom} 
-          GuestScores={GuestScores} 
+        <ScoreBoard
+          currentInning={currentInning}
+          isBottom={isBottom}
+          GuestScores={GuestScores}
           HomeScores={HomeScores} />
-        <Outs />
-        <ButtonStyle onClick={changeInning}>
-          Change
-        </ButtonStyle>
       </div>
+      <ContainerStyle>
+        <OutBoard currentOuts={currentOuts} />
+      </ContainerStyle>
+      <ContainerStyle>
+        <PaFormArea />
+      </ContainerStyle>
     </>
   );
 }
