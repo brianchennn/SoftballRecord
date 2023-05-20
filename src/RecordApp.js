@@ -6,6 +6,12 @@ import { useState } from 'react'
 const GuestTeam = "Yankees"
 const HomeTeam = "Red Sox"
 
+const ContainerStyle = styled.div`
+  display: flex;
+  //box-shadow: 10px 5px 5px black;
+  width: 100%;
+`
+
 const HeaderStyle = styled.div`
   background-color: #ededed;
   font-size: 20px;
@@ -29,15 +35,24 @@ const TableStyle = styled.div`
   font-family: 微軟正黑體;
   align-content: center;
   align-self: center;
+  align-items: center;
+  text-align: center;
+  ;
+`
+
+const ButtonStyle = styled.button`
+  color: #012311;
+  background-color: coral;
+  font-size: 20px;
   ;
 `
 
 const CurrentInningStyle = styled.div`
-  font-color: red;
+  color: red;
   ;
 `
 const NotCurrentInningStyle = styled.div`
-  font-color: black;
+  color: black;
   ;
 `
 
@@ -48,17 +63,40 @@ const Header = () => (
     </HeaderStyle>
   </h1>
 )
- 
-const InningsRow = ({currentInning, Innings}) => {
 
+const Inning = ({ currentInning, targetInning }) => {
+  if (currentInning == targetInning) {
+    return (
+      <td width="100px">
+        <CurrentInningStyle>
+          {targetInning}
+        </CurrentInningStyle>
+      </td>
+    )
+  } else {
+    return (
+      <td width="100px">
+        <NotCurrentInningStyle>
+          {targetInning}
+        </NotCurrentInningStyle>
+      </td>
+    )
+  }
+}
+
+const InningsRow = ({ currentInning }) => {
   return (
     <tr>
-      <td key="0" width="100px"></td>
-      {Innings.map((item, index) => (
-        <td width="100px" key={index}>
-          {item+1}
-        </td>
-      ))}
+      <td></td>
+      <Inning currentInning={currentInning} targetInning={1} />
+      <Inning currentInning={currentInning} targetInning={2} />
+      <Inning currentInning={currentInning} targetInning={3} />
+      <Inning currentInning={currentInning} targetInning={4} />
+      <Inning currentInning={currentInning} targetInning={5} />
+      <Inning currentInning={currentInning} targetInning={6} />
+      <Inning currentInning={currentInning} targetInning={7} />
+      <Inning currentInning={currentInning} targetInning={8} />
+      <Inning currentInning={currentInning} targetInning={9} />
       <td width="70px">R</td>
       <td width="70px">H</td>
       <td width="70px">E</td>
@@ -82,7 +120,8 @@ const Score = (props) => {
 }
 
 const ScoreBoard = (props) => {
-  const Innings = Array.from({ length: 9 }, (_, index) => index);
+  const { currentInning } = props
+  // const Innings = Array.from({ length: 9 }, (_, index) => index);
   const GuestScores = Array.from({ length: 9 }, (_, index) => -1);
   const homeScores = Array.from({ length: 9 }, (_, index) => -1);
   return (
@@ -90,19 +129,19 @@ const ScoreBoard = (props) => {
       <TableStyle>
         <table border="1">
           <tbody>
-            <InningsRow currentInning={props.currentInning} Innings={Innings}/>
-          <tr>
-            <td key={GuestTeam}>{GuestTeam}</td>
-            {GuestScores.map((score, index) => (
+            <InningsRow currentInning={currentInning} />
+            <tr>
+              <td key={GuestTeam}>{GuestTeam}</td>
+              {GuestScores.map((score, index) => (
                 <Score key={index} score={score} />
-            ))}
-          </tr>
-          <tr>
-            <td key={HomeTeam}>{HomeTeam}</td>
-            {homeScores.map((score, index) => (
-              <Score key={index} score={score} />
-            ))}
-          </tr>
+              ))}
+            </tr>
+            <tr>
+              <td key={HomeTeam}>{HomeTeam}</td>
+              {homeScores.map((score, index) => (
+                <Score key={index} score={score} />
+              ))}
+            </tr>
           </tbody>
         </table>
       </TableStyle>
@@ -110,24 +149,41 @@ const ScoreBoard = (props) => {
   )
 }
 
-const InputArea = () => {
-  return
+const InputArea = (props) => {
+  
+  return (
+    <>
+      <ButtonStyle onclick={props.toNextInning}>
+          Change
+      </ButtonStyle>
+    </>
+  )
 }
 
 function RecordApp() {
   const [currentInning, setCurrentInning] = useState(1);
+  const [isBottom, setBottom] = useState(0); 
 
-  const toNextInning = () => setCurrentInning(currentInning+1);
+  const toNextInning = () => {
+    if (currentInning === 9) {
+      setCurrentInning(1);
+    } else {
+      setCurrentInning(currentInning + 1);
+    }
+  }
   return (
     <>
-    <div>
-      <Header />
-      <ScoreboardStyle />
-      <ScoreBoard currentInning={currentInning}/>
-      <InputArea />
-    </div>
+      <div>
+        <Header />
+        <ScoreboardStyle />
+        <ScoreBoard currentInning={currentInning} isBottom={isBottom} />
+        
+        <ButtonStyle onClick={toNextInning}>
+          Change
+        </ButtonStyle>
+      </div>
     </>
   );
-} 
+}
 
 export default RecordApp;
