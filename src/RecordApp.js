@@ -65,7 +65,7 @@ const TableStyle = styled.div`
   align-items: center;
   text-align: center;
 `
-const HistoryTableStyle = styled.table`
+const HistoryTableStyle = styled.div`
   margin: 15px;
   border-style: solid;
   border: 1px dotted;
@@ -232,7 +232,7 @@ const ScoreBoard = (props) => {
 
 const OutBoard = ({ currentOuts }) => {
   var outs = currentOuts
-  if (outs == 3) {
+  if (outs === 3) {
     outs = 0
   }
   const O1 = Array.from({length: outs}, (_, index) => index)
@@ -431,18 +431,18 @@ const HistoryArea = ({ history }) => {
       <table>
       <tbody>
       <tr>
-        {attributes.map(attr => (<td width="10% fit-content">{attr}</td>))}
+        {attributes.map((attr, index) => (<td key={index} width="10% fit-content">{attr}</td>))}
       </tr>
       {history.map((hist, index) => (
-              <tr>
-                <td>{hist.team}</td>
-                <td>{hist.inning}</td>
-                <td>{hist.battingOrder}</td>
-                <td>{hist.playerNumber}</td>
-                <td>{hist.direction}</td>
-                <td>{hist.battingResult}</td>
-                <td>{hist.outs}</td>
-                <td>{hist.rbi} </td>
+              <tr key={index}>
+                <td key={index.toString() + "team"}>{hist.team}</td>
+                <td key={index.toString() + "inning"}>{hist.inning}</td>
+                <td key={index.toString() + "battingOrder"}>{hist.battingOrder}</td>
+                <td key={index.toString() + "playerNumber"}>{hist.playerNumber}</td>
+                <td key={index.toString() + "direction"}>{hist.direction}</td>
+                <td key={index.toString() + "battingResult"}>{hist.battingResult}</td>
+                <td key={index.toString() + "outs"}>{hist.outs}</td>
+                <td key={index.toString() + "rbi"}>{hist.rbi} </td>
               </tr>
             
           
@@ -536,11 +536,11 @@ function RecordApp() {
     if (history.length === 0) {
       return
     }
-    setHistory(history.filter((_, i) => {return i != history.length-1}))
+    setHistory(history.filter((_, i) => {return i !== history.length-1}))
     setByLastHistory();
   }
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     if (history.length !== 0) {
       setHistory([])
     }
@@ -549,21 +549,21 @@ function RecordApp() {
     setCurrentOuts(0)
     setCurrentInning(1)
     setBottom(0)
-  }
+  }, [history.length])
 
   const handleExport = () => {
     var csv = ["\ufeff" + GuestTeam + "\n", "\ufeff" + HomeTeam + "\n"]
 
     history.forEach(hist => {
       //csv[hist.team == GuestTeam ? 0 : 1] += hist.team + ","
-      csv[hist.team == GuestTeam ? 0 : 1] += hist.inning + ","
-      csv[hist.team == GuestTeam ? 0 : 1] += hist.battingOrder + ","
-      csv[hist.team == GuestTeam ? 0 : 1] += hist.playerNumber + ","
-      csv[hist.team == GuestTeam ? 0 : 1] += hist.direction + ","
-      csv[hist.team == GuestTeam ? 0 : 1] += hist.battingResult + ","
-      csv[hist.team == GuestTeam ? 0 : 1] += hist.outs + ","
-      csv[hist.team == GuestTeam ? 0 : 1] += hist.rbi + ","
-      csv[hist.team == GuestTeam ? 0 : 1] += "\n"
+      csv[hist.team === GuestTeam ? 0 : 1] += hist.inning + ","
+      csv[hist.team === GuestTeam ? 0 : 1] += hist.battingOrder + ","
+      csv[hist.team === GuestTeam ? 0 : 1] += hist.playerNumber + ","
+      csv[hist.team === GuestTeam ? 0 : 1] += hist.direction + ","
+      csv[hist.team === GuestTeam ? 0 : 1] += hist.battingResult + ","
+      csv[hist.team === GuestTeam ? 0 : 1] += hist.outs + ","
+      csv[hist.team === GuestTeam ? 0 : 1] += hist.rbi + ","
+      csv[hist.team === GuestTeam ? 0 : 1] += "\n"
     })
     console.log(csv)
     let date = new Date().toLocaleDateString();
@@ -580,7 +580,7 @@ function RecordApp() {
     setCurrentOuts(history[history.length-1].outs)
     setCurrentInning(history[history.length-1].inning)
     setAccuScore(accuScore + history[history.length-1].rbi)
-  }, [history])
+  }, [history, accuScore, handleReset])
 
   
 
