@@ -21,7 +21,7 @@ const PaFormContainerStyle = styled.div`
   margin-bottom: 10px;
   align-items: center;
   text-align: left;
-  width: 50%;
+  width: 400px;
   float:left;
 `
 
@@ -31,7 +31,7 @@ const HistoryContainerStyle = styled.div`
   margin-bottom: 10px;
   align-items: right;
   text-align: right;
-  width: 50%;
+  width: 1000px;
   float:left;
 `
 
@@ -76,7 +76,7 @@ const HistoryTableStyle = styled.div`
   align-self: center;
   align-items: center;
   text-align: center;
-  width: 80%;
+  width: 700px;
 `
 const ButtonStyle = styled.button`
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -424,7 +424,6 @@ const PaFormArea = ({ setHistory, history,
 
 const HistoryArea = ({ history }) => {
   const attributes = ['隊伍','局數','棒次','背號','打擊方向','打擊結果','出局數','打點']
-  console.log(history)
   return (
     <HistoryContainerStyle>
       <HistoryTableStyle>
@@ -555,7 +554,6 @@ function RecordApp() {
     var csv = ["\ufeff" + GuestTeam + "\n", "\ufeff" + HomeTeam + "\n"]
 
     history.forEach(hist => {
-      //csv[hist.team == GuestTeam ? 0 : 1] += hist.team + ","
       csv[hist.team === GuestTeam ? 0 : 1] += hist.inning + ","
       csv[hist.team === GuestTeam ? 0 : 1] += hist.battingOrder + ","
       csv[hist.team === GuestTeam ? 0 : 1] += hist.playerNumber + ","
@@ -565,7 +563,6 @@ function RecordApp() {
       csv[hist.team === GuestTeam ? 0 : 1] += hist.rbi + ","
       csv[hist.team === GuestTeam ? 0 : 1] += "\n"
     })
-    console.log(csv)
     let date = new Date().toLocaleDateString();
 
     exportToCsv(date, csv[0] + "\n\n" + csv[1])
@@ -583,8 +580,6 @@ function RecordApp() {
   }, [history, accuScore, handleReset])
 
   
-
-  console.log(battingOrder);
   return (
     <>
       <div>
