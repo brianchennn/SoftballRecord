@@ -213,8 +213,10 @@ const ScoreBoard = ({ currentInning, isBottom, scores, history }) => {
               {scores[0].map((score, index) => (
                 <Score key={index} score={score} />
               ))}
-              {}
-              <td> {history.filter(hist => hist.team === GuestTeam).reduce((sum, a) => sum + a.rbi, 0)} </td>
+              
+              <td> {/* Run */}
+                {history.filter(hist => hist.team === GuestTeam).reduce((sum, a) => sum + a.rbi, 0)} 
+              </td>
               
             </tr>
             <tr>
@@ -222,7 +224,9 @@ const ScoreBoard = ({ currentInning, isBottom, scores, history }) => {
               {scores[1].map((score, index) => (
                 <Score key={index} score={score} />
               ))}
-              <td> {history.filter(hist => hist.team === HomeTeam).reduce((sum, a) => sum + a.rbi, 0)} </td>
+              <td> 
+                {history.filter(hist => hist.team === HomeTeam).reduce((sum, a) => sum + a.rbi, 0)} 
+              </td>
             </tr>
           </tbody>
         </table>
@@ -534,7 +538,7 @@ function RecordApp() {
       return
     }
     setByLastHistory();
-    
+    // eslint-disable-next-line
   }, [history])
 
   console.log(history)
