@@ -201,9 +201,7 @@ const Score = ({ score }) => {
   }
 }
 
-const ScoreBoard = (props) => {
-  const { currentInning, isBottom, scores } = props
-
+const ScoreBoard = ({ currentInning, isBottom, scores, history }) => {
   return (
     <ScoreboardStyle>
       <TableStyle>
@@ -215,12 +213,16 @@ const ScoreBoard = (props) => {
               {scores[0].map((score, index) => (
                 <Score key={index} score={score} />
               ))}
+              {}
+              <td> {history.filter(hist => hist.team === GuestTeam).reduce((sum, a) => sum + a.rbi, 0)} </td>
+              
             </tr>
             <tr>
               <PrintHomeTeam isBottom={isBottom} />
               {scores[1].map((score, index) => (
                 <Score key={index} score={score} />
               ))}
+              <td> {history.filter(hist => hist.team === HomeTeam).reduce((sum, a) => sum + a.rbi, 0)} </td>
             </tr>
           </tbody>
         </table>
@@ -455,10 +457,6 @@ function RecordApp() {
     setOuts(0)
     if (isBottom === 0) {
       setBottom(1)
-    }
-    else if (currentInning === 9) {
-      setBottom(0)
-      setCurrentInning(1);
     } else {
       setBottom(0)
       setCurrentInning(currentInning + 1);
@@ -469,13 +467,12 @@ function RecordApp() {
     setCurrentPa(history[history.length-1].currentPa)
     setCurrentOuts(history[history.length-1].outs)
     setCurrentInning(history[history.length-1].inning)
-    if (history.length === 0) {
-    } else if (history.length === 1) {
-      history[history.length-1].accuScore = history[history.length-1].rbi
-    } else if (history.length > 1) {
-      history[history.length-1].accuScore = history[history.length-2].accuScore + history[history.length-1].rbi
-    }
-    setAccuScore(history[history.length-1].accuScore)
+    
+    setAccuScore(
+      history.filter(hist => hist.inning === currentInning && hist.team === (isBottom ? HomeTeam : GuestTeam))
+          .reduce((sum, a) => sum + a.rbi, 0)
+    )
+
     setBottom(history[history.length-1].team === GuestTeam ? 0 : 1)
   }
 
@@ -500,7 +497,7 @@ function RecordApp() {
       return
     }
     setHistory(history.filter((_, i) => {return i !== history.length-1}))
-    setByLastHistory();
+    // setByLastHistory();
   }
   const handleReset = useCallback(() => {
     if (history.length !== 0) {
@@ -555,6 +552,7 @@ function RecordApp() {
           currentInning={currentInning}
           isBottom={isBottom}
           scores={scores}
+          history={history}
           />
 
       </div>
