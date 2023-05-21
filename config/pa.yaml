@@ -1,0 +1,7 @@
+pa:
+ batterOrder: 0
+ playerNumber: 42
+ direction: 1
+ battingResult: "GO"
+ outs: 0
+ rbi: 0

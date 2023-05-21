@@ -1,0 +1,9 @@
+game:
+  date: 20230501
+  guestScores: [0,0,1,2,0,0,0,0,0]
+  homeScores: [0,0,2,2,0,0,0,0,0]
+  winner: guest
+  pas:
+    - pa1
+    - pa2
+    - pa3

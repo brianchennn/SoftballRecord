@@ -1,19 +1,40 @@
-import logo from './logo.svg';
 import './App.css';
 import styled from '@emotion/styled'
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 const GuestTeam = "Yankees"
 const HomeTeam = "Red Sox"
 
-const ContainerStyle = styled.div`
-  display: flex;
-  margin-up: 100px;
+const OutsContainerStyle = styled.div`
+  border-radius: 50%;
+  display: inline-block;
+  margin-up: 10px;
   margin-bottom: 10px;
   align-items: center;
   text-align: center;
   width: 100%;
 `
+
+const PaFormContainerStyle = styled.div`
+  border-radius: 50%;
+  margin-up: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+  text-align: left;
+  width: 50%;
+  float:left;
+`
+
+const HistoryContainerStyle = styled.div`
+  border-radius: 50%;
+  margin-up: 10px;
+  margin-bottom: 10px;
+  align-items: right;
+  text-align: right;
+  width: 50%;
+  float:left;
+`
+
 const InputStyle = styled.div`
   font-font-size-adjust: 0.90;
   font-family: 微軟正黑體;
@@ -44,19 +65,28 @@ const TableStyle = styled.div`
   align-items: center;
   text-align: center;
 `
+const HistoryTableStyle = styled.div`
+  font-size: 15px;
+  border-collapse: collapse;
+  font-family: 微軟正黑體;
+  align-content: center;
+  align-self: center;
+  align-items: center;
+  text-align: center;
+`
 const ButtonStyle = styled.button`
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   color: #012311;
   height: 40px;
   width: 100px;
-  margin-left: 40px;
-  margin-right: 40px;
+  margin-left: 20px;
+  margin-right: 20px;
   margin-up: 40px;
   margin-bottom: 40px;
   font-size: 20px;
   text-align: center;
-  background-color: ${(bg) => bg};
+  background-color: ${({bgcolor}) => bgcolor};
   &:hover {
     background-color: lightblue;
   };
@@ -95,7 +125,7 @@ const Header = () => (
 )
 
 const Inning = ({ currentInning, targetInning }) => {
-  if (currentInning == targetInning) {
+  if (currentInning === targetInning) {
     return (
       <td width="100px">
         <CurrentInningStyle>
@@ -138,7 +168,7 @@ const PrintHomeTeam = ({ isBottom }) => {
   }
 }
 
-const InningsRow = ({ currentInning }) => {
+const InningsRow = ({ currentInning, GuestScores }) => {
   const Innings = Array.from({ length: 9 }, (_, index) => index);
   return (
     <tr>
@@ -154,8 +184,8 @@ const InningsRow = ({ currentInning }) => {
   )
 }
 
-const Score = (props) => {
-  const { score } = props;
+const Score = ({ score }) => {
+  console.log("score: ", score)
   if (score === -1) {
     return (
       <td></td>
@@ -163,15 +193,16 @@ const Score = (props) => {
   } else {
     return (
       <td>
-        score
+        {score}
       </td>
     )
   }
 }
 
 const ScoreBoard = (props) => {
-  const { currentInning, isBottom, GuestScores, HomeScores } = props
+  const { currentInning, isBottom, scores } = props
   // const Innings = Array.from({ length: 9 }, (_, index) => index);
+  console.log("scores[0]: ", scores[0])
 
   return (
     <div>
@@ -180,14 +211,14 @@ const ScoreBoard = (props) => {
           <tbody>
             <InningsRow currentInning={currentInning} />
             <tr>
-              <PrintGuestTeam isBottom={isBottom} />
-              {GuestScores.map((score, index) => (
+              <PrintGuestTeam isBottom={isBottom} GuestScores={scores[0]} />
+              {scores[0].map((score, index) => (
                 <Score key={index} score={score} />
               ))}
             </tr>
             <tr>
               <PrintHomeTeam isBottom={isBottom} />
-              {HomeScores.map((score, index) => (
+              {scores[1].map((score, index) => (
                 <Score key={index} score={score} />
               ))}
             </tr>
@@ -198,11 +229,11 @@ const ScoreBoard = (props) => {
   )
 }
 
-const OutBoard = ({currentOuts}) => {
+const OutBoard = ({ currentOuts }) => {
   const O1 = Array.from({length: currentOuts}, (_, index) => index)
   const O2 = Array.from({length: 3 - currentOuts}, (_, index) => index)
   return (
-    <ContainerStyle>
+    <OutsContainerStyle>
       <div>
         <h3 align="center">
           Outs
@@ -214,34 +245,37 @@ const OutBoard = ({currentOuts}) => {
           <OutSign key={index+3}></OutSign>
         ))}
       </div>
-    </ContainerStyle>
+    </OutsContainerStyle>
   )
 }
 
 const ButtonArea = ({ changeInning }) => {
-  const bg = 'blue'
+
   return (
     <>
-      <ButtonStyle onClick={changeInning} bg={bg}>
+      <ButtonStyle onClick={changeInning} bgcolor={'#66B3FF'}>
         Change
       </ButtonStyle>
-      <ButtonStyle bg={bg}>
-        Submit
+      <ButtonStyle bgcolor={'#02DF82'}>
+        Export
       </ButtonStyle>
-      <ButtonStyle bg={bg}>
-        Button3
+      <ButtonStyle bgcolor={'#FF8040'}>
+        Reset
       </ButtonStyle>
     </>
   )
 }
 
-const BattingOrder = ({setBattingOrder}) => {
-
+const BattingOrder = ({ handleChange0, setBattingOrder }) => {
   const Options = Array.from({ length: 11 }, (_, index) => index + 1)
+  
+ const handleChange = event => setBattingOrder(event.target.value)
+  
   return (
     <InputStyle>
       <label>棒次: </label>
-      <select>
+      <select onChange={handleChange}>
+        <option></option>
         {Options.map((op, index) => (
           <option key={index}>{op}</option>
         ))}
@@ -250,23 +284,27 @@ const BattingOrder = ({setBattingOrder}) => {
   )
 }
 
-const PlayerNumber = () => {
+const PlayerNumber = ({ setPlayerNumber }) => {
+
+  const handleChange = event => setPlayerNumber(event.target.value)
+
   return (
     <InputStyle>
       <label>背號: </label>
-      <input>
-
-      </input>
+      <input onChange={handleChange} />
     </InputStyle>
   )
 }
 
-const Direction = () => {
-  const PositionCode = ['1 (投手)', '2 (捕手)', '3 (一壘)', '4 (二壘)', '5 (三壘)', '6 (游擊)', '7 (左外)', '8 (中外)', '9 (右外)', '10 (自由)'];
+const Direction = ({ setDirection }) => {
+  const PositionCode = ['', '1 (投手)', '2 (捕手)', '3 (一壘)', '4 (二壘)', '5 (三壘)', '6 (游擊)', '7 (左外)', '8 (中外)', '9 (右外)', '10 (自由)'];
+  
+  const handleChange = event => setDirection(event.target.value)
+
   return (
     <InputStyle>
       <label>打擊方向: </label>
-      <select>
+      <select onChange={handleChange}>
         {PositionCode.map((position, index) => (
           <option key={index}>
             {position}
@@ -277,12 +315,15 @@ const Direction = () => {
   )
 }
 
-const BattingResult = () => {
-  const Result = ['GO (滾地出局)', 'FO (飛球出局)', 'FC (野手選擇)', 'E (對手失誤)', 'K (被三振)', 'BB (保送)', 'SF (高飛犧牲打)', '1B (一壘安打)', '2B (二壘安打)', '3B (三壘安打)', 'HR (全壘打)'];
+const BattingResult = ({ setBattingResult }) => {
+  const Result = ['', 'GO (滾地出局)', 'FO (飛球出局)', 'FC (野手選擇)', 'E (對手失誤)', 'K (被三振)', 'BB (保送)', 'SF (高飛犧牲打)', '1B (一壘安打)', '2B (二壘安打)', '3B (三壘安打)', 'HR (全壘打)'];
+
+  const handleChange = event => setBattingResult(event.target.value)
+
   return (
     <InputStyle>
       <label>打擊結果: </label>
-      <select>
+      <select onChange={handleChange}>
         {Result.map((result, index) => (
           <option key={index}>
             {result}
@@ -293,28 +334,15 @@ const BattingResult = () => {
   )
 }
 
-const Rbi = () => {
-  const Result = ['0 RBI', '1 RBI', '2 RBI', '3 RBI', '4 RBI'];
-  return (
-    <InputStyle>
-      <label>打點: </label>
-      <select>
-        {Result.map((result, index) => (
-          <option key={index}>
-            {result}
-          </option>
-        ))}
-      </select>
-    </InputStyle>
-  )
-}
+const Outs = ({ setOuts }) => {
+  const Result = ['', '0', '1', '2', '3'];
 
-const OutsSelect = () => {
-  const Result = ['0', '1', '2', '3'];
+  const handleChange = event => setOuts(event.target.value)
+
   return (
     <InputStyle>
       <label>出局: </label>
-      <select>
+      <select onChange={handleChange}>
         {Result.map((result, index) => (
           <option key={index}>
             {result}
@@ -325,51 +353,191 @@ const OutsSelect = () => {
   )
 }
 
+const Rbi = ({ setRbi }) => {
+  const Result = [0, 1, 2, 3, 4];
 
-const PaFormArea = () => {
-  const [battingOrder, setBattingOrder] = useState(0)
-  const [playerNumber, setPlayerNumber] = useState("")
-  const [direction, setDirection] = useState("")
-  const [battingResult, setBattingResult] = useState("")
-  const [outs, setOuts] = useState(0)
-  const [rbi, setRbi] = useState("")
+  const handleChange = event => setRbi(parseInt(event.target.value))
 
-  const Options = Array.from({ length: 11 }, (_, index) => index + 1)
   return (
-    <>
-      <ButtonStyle>
-        送出
-      </ButtonStyle>
-      <div></div>
+    <InputStyle>
+      <label>打點: </label>
+      <select onChange={handleChange}>
+        {Result.map((result, index) => (
+          <option key={index}>
+            {result}
+          </option>
+        ))}
+      </select>
+    </InputStyle>
+  )
+}
+/*
+const PaFormArea = ({ setHistory, history,
+                      setCurrentPa, currentPa, 
+                      setBattingOrder, battingOrder, 
+                      setPlayerNumber, playerNumber,
+                      setDirection, direction,
+                      setBattingResult, battingResult,
+                      setOuts, outs, 
+                      setRbi, rbi,
+                      setCurrentOuts, currentOuts, isBottom}) => {
+
+
+  const handleClick = () => {
+    setCurrentOuts(outs)
+    setCurrentPa(currentPa+1)
+    setHistory([...history, {
+      team: isBottom ? HomeTeam : GuestTeam,
+      battingOrder: battingOrder,
+      playerNumber: playerNumber,
+      direction: direction,
+      battingResult: battingResult,
+      outs: outs,
+      rbi: rbi,
+      currentOuts: currentOuts
+    }])
+  }
+
+  useEffect(() => {
+    console.log(history)
+  }, [history])
+
+  return (
+    <PaFormContainerStyle>
+      <ButtonStyle onClick={handleClick}> 送出 </ButtonStyle>
+      <font>打席數: {currentPa}</font>
       <BattingOrder setBattingOrder={setBattingOrder} />
       <PlayerNumber setPlayerNumber={setPlayerNumber} />
       <Direction setDirection={setDirection} />
       <BattingResult setBattingResult={setBattingResult} />
-      <OutsSelect setOuts={setOuts} />
+      <Outs setOuts={setOuts} />
       <Rbi setRbi={setRbi} />
-    </>
+    </PaFormContainerStyle>
+  )
+}
+*/
+
+const HistoryArea = ({ history }) => {
+  console.log(history)
+  return (
+    <HistoryContainerStyle>
+      <HistoryTableStyle>
+      <table>
+      <thead>History
+      </thead>
+      <tbody>
+      <tr>
+        <td>隊伍</td>
+        <td>局數</td>
+        <td>棒次</td>
+        <td>背號</td>
+        <td>打擊方向</td>
+        <td>打擊結果</td>
+        <td>出局數</td>
+        <td>打點</td>
+      </tr>
+      {history.map((hist, index) => (
+              <tr>
+                <td>{hist.team}</td>
+                <td>{hist.inning}</td>
+                <td>{hist.battingOrder}</td>
+                <td>{hist.playerNumber}</td>
+                <td>{hist.direction}</td>
+                <td>{hist.battingResult}</td>
+                <td>{hist.outs}</td>
+                <td>{hist.rbi} </td>
+              </tr>
+            
+          
+        ))}
+        </tbody>
+        </table>
+        </HistoryTableStyle>
+    </HistoryContainerStyle>
   )
 }
 
 function RecordApp() {
-  const [currentInning, setCurrentInning] = useState(1);
-  const [currentOuts, setCurrentOuts] = useState(0);
-  const [isBottom, setBottom] = useState(false);
-  const GuestScores = Array.from({ length: 9 }, (_, index) => -1);
-  const HomeScores = Array.from({ length: 9 }, (_, index) => -1);
+  const [history, setHistory] = useState([])
+  const [currentInning, setCurrentInning] = useState(1)
+  const [currentOuts, setCurrentOuts] = useState(0)
+  const [currentPa, setCurrentPa] = useState(0)
+  const [battingOrder, setBattingOrder] = useState(1)
+  const [playerNumber, setPlayerNumber] = useState("")
+  const [direction, setDirection] = useState("")
+  const [battingResult, setBattingResult] = useState("")
+  const [outs, setOuts] = useState("")
+  const [rbi, setRbi] = useState(0)
+  const [accuScore, setAccuScore] = useState(0)
 
+  const [isBottom, setBottom] = useState(0);
+  const [scores, setScores] = useState(
+    [
+      Array.from({ length: 9 }, (_) => -1), 
+      Array.from({ length: 9 }, (_) => -1)
+    ]
+    )
   const changeInning = () => {
-    if (isBottom === false) {
-      setBottom(true)
+    scores[isBottom][currentInning-1] = accuScore
+    setAccuScore(0)
+    setScores(scores)
+    if (isBottom === 0) {
+      setBottom(1)
     }
     else if (currentInning === 9) {
-      setBottom(false)
+      setBottom(0)
       setCurrentInning(1);
     } else {
-      setBottom(false)
+      setBottom(0)
       setCurrentInning(currentInning + 1);
     }
   }
+
+  const setByLastHistory = () => {
+    setCurrentPa(history[history.length-1].currentPa)
+    setCurrentOuts(history[history.length-1].outs)
+  }
+
+  const handleSendClick = () => {
+
+    setHistory([...history, {
+      team: isBottom ? HomeTeam : GuestTeam,
+      inning: currentInning,
+      battingOrder: battingOrder,
+      playerNumber: playerNumber,
+      direction: direction,
+      battingResult: battingResult,
+      outs: outs,
+      rbi: rbi,
+      currentOuts: currentOuts
+    }])
+
+  }
+
+  const handleUndoClick = () => {
+    if (history.length === 0) {
+      return
+    }
+    setHistory(history.filter((_, i) => {return i != history.length-1}))
+    setByLastHistory();
+  }
+
+  
+
+  useEffect(() => {
+    if (history.length === 0) {
+      setCurrentPa(0)
+      setCurrentOuts(0)
+      return
+    }
+    setCurrentPa(history[history.length-1].currentPa)
+    setCurrentOuts(history[history.length-1].outs)
+    setAccuScore(accuScore + history[history.length-1].rbi)
+  }, [history])
+
+  
+
+  console.log(battingOrder);
   return (
     <>
       <div>
@@ -379,15 +547,29 @@ function RecordApp() {
         <ScoreBoard
           currentInning={currentInning}
           isBottom={isBottom}
-          GuestScores={GuestScores}
-          HomeScores={HomeScores} />
+          scores={scores}
+          />
       </div>
-      <ContainerStyle>
+      <OutsContainerStyle>
         <OutBoard currentOuts={currentOuts} />
-      </ContainerStyle>
-      <ContainerStyle>
-        <PaFormArea />
-      </ContainerStyle>
+      </OutsContainerStyle>
+
+      
+      <PaFormContainerStyle>
+        <ButtonStyle onClick={handleSendClick}> 送出 </ButtonStyle>
+        <ButtonStyle onClick={handleUndoClick}> Undo </ButtonStyle>
+        <p>打席數: {currentPa}</p>
+        <BattingOrder setBattingOrder={setBattingOrder} />
+        <PlayerNumber setPlayerNumber={setPlayerNumber} />
+        <Direction setDirection={setDirection} />
+        <BattingResult setBattingResult={setBattingResult} />
+        <Outs setOuts={setOuts} />
+        <Rbi setRbi={setRbi} />
+      </PaFormContainerStyle>
+      
+      
+      <HistoryArea history={history} isBottom={isBottom} />
+      
     </>
   );
 }
