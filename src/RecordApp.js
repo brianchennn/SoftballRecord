@@ -65,14 +65,18 @@ const TableStyle = styled.div`
   align-items: center;
   text-align: center;
 `
-const HistoryTableStyle = styled.div`
+const HistoryTableStyle = styled.table`
+  margin: 15px;
+  border-style: solid;
+  border: 1px dotted;
   font-size: 15px;
-  border-collapse: collapse;
+  border-collapse: seperate;
   font-family: 微軟正黑體;
   align-content: center;
   align-self: center;
   align-items: center;
   text-align: center;
+  width: 80%;
 `
 const ButtonStyle = styled.button`
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -145,7 +149,7 @@ const Inning = ({ currentInning, targetInning }) => {
 }
 
 const PrintGuestTeam = ({ isBottom }) => {
-  if (isBottom === false) {
+  if (isBottom === 0) {
     return (
         <td><font color="red">{GuestTeam}</font></td>
     )
@@ -157,7 +161,7 @@ const PrintGuestTeam = ({ isBottom }) => {
 }
 
 const PrintHomeTeam = ({ isBottom }) => {
-  if (isBottom === true) {
+  if (isBottom === 1) {
     return (
       <td><font color="red">{HomeTeam}</font></td>
     )
@@ -185,7 +189,6 @@ const InningsRow = ({ currentInning, GuestScores }) => {
 }
 
 const Score = ({ score }) => {
-  console.log("score: ", score)
   if (score === -1) {
     return (
       <td></td>
@@ -201,8 +204,6 @@ const Score = ({ score }) => {
 
 const ScoreBoard = (props) => {
   const { currentInning, isBottom, scores } = props
-  // const Innings = Array.from({ length: 9 }, (_, index) => index);
-  console.log("scores[0]: ", scores[0])
 
   return (
     <div>
@@ -230,8 +231,12 @@ const ScoreBoard = (props) => {
 }
 
 const OutBoard = ({ currentOuts }) => {
-  const O1 = Array.from({length: currentOuts}, (_, index) => index)
-  const O2 = Array.from({length: 3 - currentOuts}, (_, index) => index)
+  var outs = currentOuts
+  if (outs == 3) {
+    outs = 0
+  }
+  const O1 = Array.from({length: outs}, (_, index) => index)
+  const O2 = Array.from({length: 2 - outs}, (_, index) => index)
   return (
     <OutsContainerStyle>
       <div>
@@ -249,17 +254,17 @@ const OutBoard = ({ currentOuts }) => {
   )
 }
 
-const ButtonArea = ({ changeInning }) => {
+const ButtonArea = ({ handleChange, handleReset, handleExport }) => {
 
   return (
     <>
-      <ButtonStyle onClick={changeInning} bgcolor={'#66B3FF'}>
+      <ButtonStyle onClick={handleChange} bgcolor={'#66B3FF'}>
         Change
       </ButtonStyle>
-      <ButtonStyle bgcolor={'#02DF82'}>
+      <ButtonStyle onClick={handleExport} bgcolor={'#02DF82'}>
         Export
       </ButtonStyle>
-      <ButtonStyle bgcolor={'#FF8040'}>
+      <ButtonStyle onClick={handleReset} bgcolor={'#FF8040'}>
         Reset
       </ButtonStyle>
     </>
@@ -418,23 +423,15 @@ const PaFormArea = ({ setHistory, history,
 */
 
 const HistoryArea = ({ history }) => {
+  const attributes = ['隊伍','局數','棒次','背號','打擊方向','打擊結果','出局數','打點']
   console.log(history)
   return (
     <HistoryContainerStyle>
       <HistoryTableStyle>
       <table>
-      <thead>History
-      </thead>
       <tbody>
       <tr>
-        <td>隊伍</td>
-        <td>局數</td>
-        <td>棒次</td>
-        <td>背號</td>
-        <td>打擊方向</td>
-        <td>打擊結果</td>
-        <td>出局數</td>
-        <td>打點</td>
+        {attributes.map(attr => (<td width="10% fit-content">{attr}</td>))}
       </tr>
       {history.map((hist, index) => (
               <tr>
@@ -457,6 +454,26 @@ const HistoryArea = ({ history }) => {
   )
 }
 
+function exportToCsv(filename, csvFile) {
+
+  var blob = new Blob([csvFile], { type: 'text/csv;charset=unicode;' });
+  if (navigator.msSaveBlob) { // IE 10+
+      navigator.msSaveBlob(blob, filename);
+  } else {
+      var link = document.createElement("a");
+      if (link.download !== undefined) { // feature detection
+          // Browsers that support HTML5 download attribute
+          var url = URL.createObjectURL(blob);
+          link.setAttribute("href", url);
+          link.setAttribute("download", filename);
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+      }
+  }
+}
+
 function RecordApp() {
   const [history, setHistory] = useState([])
   const [currentInning, setCurrentInning] = useState(1)
@@ -469,7 +486,6 @@ function RecordApp() {
   const [outs, setOuts] = useState("")
   const [rbi, setRbi] = useState(0)
   const [accuScore, setAccuScore] = useState(0)
-
   const [isBottom, setBottom] = useState(0);
   const [scores, setScores] = useState(
     [
@@ -477,10 +493,12 @@ function RecordApp() {
       Array.from({ length: 9 }, (_) => -1)
     ]
     )
-  const changeInning = () => {
+
+  const handleChange = () => {
     scores[isBottom][currentInning-1] = accuScore
     setAccuScore(0)
     setScores(scores)
+    setOuts(0)
     if (isBottom === 0) {
       setBottom(1)
     }
@@ -522,16 +540,45 @@ function RecordApp() {
     setByLastHistory();
   }
 
-  
+  const handleReset = () => {
+    if (history.length !== 0) {
+      setHistory([])
+    }
+    setScores([Array.from({ length: 9 }, (_) => -1), Array.from({ length: 9 }, (_) => -1)])
+    setCurrentPa(0)
+    setCurrentOuts(0)
+    setCurrentInning(1)
+    setBottom(0)
+  }
+
+  const handleExport = () => {
+    var csv = ["\ufeff" + GuestTeam + "\n", "\ufeff" + HomeTeam + "\n"]
+
+    history.forEach(hist => {
+      //csv[hist.team == GuestTeam ? 0 : 1] += hist.team + ","
+      csv[hist.team == GuestTeam ? 0 : 1] += hist.inning + ","
+      csv[hist.team == GuestTeam ? 0 : 1] += hist.battingOrder + ","
+      csv[hist.team == GuestTeam ? 0 : 1] += hist.playerNumber + ","
+      csv[hist.team == GuestTeam ? 0 : 1] += hist.direction + ","
+      csv[hist.team == GuestTeam ? 0 : 1] += hist.battingResult + ","
+      csv[hist.team == GuestTeam ? 0 : 1] += hist.outs + ","
+      csv[hist.team == GuestTeam ? 0 : 1] += hist.rbi + ","
+      csv[hist.team == GuestTeam ? 0 : 1] += "\n"
+    })
+    console.log(csv)
+    let date = new Date().toLocaleDateString();
+
+    exportToCsv(date, csv[0] + "\n\n" + csv[1])
+  }
 
   useEffect(() => {
     if (history.length === 0) {
-      setCurrentPa(0)
-      setCurrentOuts(0)
+      handleReset()
       return
     }
     setCurrentPa(history[history.length-1].currentPa)
     setCurrentOuts(history[history.length-1].outs)
+    setCurrentInning(history[history.length-1].inning)
     setAccuScore(accuScore + history[history.length-1].rbi)
   }, [history])
 
@@ -542,7 +589,7 @@ function RecordApp() {
     <>
       <div>
         <Header />
-        <ButtonArea changeInning={changeInning} />
+        <ButtonArea handleChange={handleChange} handleReset={handleReset} handleExport={handleExport} />
         <ScoreboardStyle />
         <ScoreBoard
           currentInning={currentInning}
