@@ -50,7 +50,6 @@ const HeaderStyle = styled.div`
 `
 const ScoreboardStyle = styled.div`
  display: flex;
- background-color: pink;
  width: 100%;
  text-align: center;
  border:1px solid #000;
@@ -206,7 +205,7 @@ const ScoreBoard = (props) => {
   const { currentInning, isBottom, scores } = props
 
   return (
-    <div>
+    <ScoreboardStyle>
       <TableStyle>
         <table border="1">
           <tbody>
@@ -226,7 +225,7 @@ const ScoreBoard = (props) => {
           </tbody>
         </table>
       </TableStyle>
-    </div>
+    </ScoreboardStyle>
   )
 }
 
@@ -271,7 +270,7 @@ const ButtonArea = ({ handleChange, handleReset, handleExport }) => {
   )
 }
 
-const BattingOrder = ({ handleChange0, setBattingOrder }) => {
+const BattingOrder = ({ setBattingOrder }) => {
   const Options = Array.from({ length: 11 }, (_, index) => index + 1)
   
  const handleChange = event => setBattingOrder(event.target.value)
@@ -376,51 +375,7 @@ const Rbi = ({ setRbi }) => {
     </InputStyle>
   )
 }
-/*
-const PaFormArea = ({ setHistory, history,
-                      setCurrentPa, currentPa, 
-                      setBattingOrder, battingOrder, 
-                      setPlayerNumber, playerNumber,
-                      setDirection, direction,
-                      setBattingResult, battingResult,
-                      setOuts, outs, 
-                      setRbi, rbi,
-                      setCurrentOuts, currentOuts, isBottom}) => {
 
-
-  const handleClick = () => {
-    setCurrentOuts(outs)
-    setCurrentPa(currentPa+1)
-    setHistory([...history, {
-      team: isBottom ? HomeTeam : GuestTeam,
-      battingOrder: battingOrder,
-      playerNumber: playerNumber,
-      direction: direction,
-      battingResult: battingResult,
-      outs: outs,
-      rbi: rbi,
-      currentOuts: currentOuts
-    }])
-  }
-
-  useEffect(() => {
-    console.log(history)
-  }, [history])
-
-  return (
-    <PaFormContainerStyle>
-      <ButtonStyle onClick={handleClick}> 送出 </ButtonStyle>
-      <font>打席數: {currentPa}</font>
-      <BattingOrder setBattingOrder={setBattingOrder} />
-      <PlayerNumber setPlayerNumber={setPlayerNumber} />
-      <Direction setDirection={setDirection} />
-      <BattingResult setBattingResult={setBattingResult} />
-      <Outs setOuts={setOuts} />
-      <Rbi setRbi={setRbi} />
-    </PaFormContainerStyle>
-  )
-}
-*/
 
 const HistoryArea = ({ history }) => {
   const attributes = ['隊伍','局數','棒次','背號','打擊方向','打擊結果','出局數','打點']
@@ -513,6 +468,15 @@ function RecordApp() {
   const setByLastHistory = () => {
     setCurrentPa(history[history.length-1].currentPa)
     setCurrentOuts(history[history.length-1].outs)
+    setCurrentInning(history[history.length-1].inning)
+    if (history.length === 0) {
+    } else if (history.length === 1) {
+      history[history.length-1].accuScore = history[history.length-1].rbi
+    } else if (history.length > 1) {
+      history[history.length-1].accuScore = history[history.length-2].accuScore + history[history.length-1].rbi
+    }
+    setAccuScore(history[history.length-1].accuScore)
+    setBottom(history[history.length-1].team === GuestTeam ? 0 : 1)
   }
 
   const handleSendClick = () => {
@@ -526,11 +490,11 @@ function RecordApp() {
       battingResult: battingResult,
       outs: outs,
       rbi: rbi,
-      currentOuts: currentOuts
+      currentOuts: currentOuts,
+      accuScore: accuScore
     }])
 
   }
-
   const handleUndoClick = () => {
     if (history.length === 0) {
       return
@@ -538,7 +502,6 @@ function RecordApp() {
     setHistory(history.filter((_, i) => {return i !== history.length-1}))
     setByLastHistory();
   }
-
   const handleReset = useCallback(() => {
     if (history.length !== 0) {
       setHistory([])
@@ -548,8 +511,8 @@ function RecordApp() {
     setCurrentOuts(0)
     setCurrentInning(1)
     setBottom(0)
+    setAccuScore(0)
   }, [history.length])
-
   const handleExport = () => {
     var csv = ["\ufeff" + GuestTeam + "\n", "\ufeff" + HomeTeam + "\n"]
 
@@ -573,24 +536,27 @@ function RecordApp() {
       handleReset()
       return
     }
-    setCurrentPa(history[history.length-1].currentPa)
-    setCurrentOuts(history[history.length-1].outs)
-    setCurrentInning(history[history.length-1].inning)
-    setAccuScore(accuScore + history[history.length-1].rbi)
-  }, [history, accuScore, handleReset])
+    setByLastHistory();
+    
+  }, [history])
 
+  console.log(history)
   
   return (
     <>
       <div>
         <Header />
-        <ButtonArea handleChange={handleChange} handleReset={handleReset} handleExport={handleExport} />
-        <ScoreboardStyle />
+        <ButtonArea 
+          handleChange={handleChange} 
+          handleReset={handleReset} 
+          handleExport={handleExport} />
+        
         <ScoreBoard
           currentInning={currentInning}
           isBottom={isBottom}
           scores={scores}
           />
+
       </div>
       <OutsContainerStyle>
         <OutBoard currentOuts={currentOuts} />
