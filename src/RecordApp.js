@@ -243,9 +243,8 @@ const OutBoard = ({ history }) => {
     outs = history.at(-1).currentOuts
   }
   // eslint-disable-next-line
-  if (outs == 3) {
-    outs = 0
-  }
+  outs = (outs >= 3) ? 0 : outs
+
 
   const O1 = Array.from({length: outs}, (_, index) => index)
   const O2 = Array.from({length: 2 - outs}, (_, index) => index)
@@ -442,7 +441,7 @@ function exportToCsv(filename, csvFile) {
 }
 
 function RecordApp() {
-  const [history, setHistory] = useState([])
+  const [history, setHistory] = useState([{}])
   const [currentInning, setCurrentInning] = useState(1)
   const [currentOuts, setCurrentOuts] = useState(0)
   const [currentPa, setCurrentPa] = useState(0)
@@ -474,15 +473,15 @@ function RecordApp() {
   }
 
   const setByLastHistory = () => {
-    setCurrentPa(history[history.length-1].currentPa)
-    setCurrentOuts(history[history.length-1].currentOuts)
-    setCurrentInning(history[history.length-1].inning)
+    setCurrentPa(history.at(-1).currentPa)
+    setCurrentOuts(history.at(-1).currentOuts)
+    setCurrentInning(history.at(-1).inning)
     setAccuScore(
       history.filter(hist => hist.inning === currentInning && hist.team === (isBottom ? HomeTeam : GuestTeam))
           .reduce((sum, a) => sum + a.rbi, 0)
     )
 
-    setBottom(history[history.length-1].team === GuestTeam ? 0 : 1)
+    setBottom(history.at(-1).team === GuestTeam ? 0 : 1)
   }
 
   const handleSendClick = () => {
