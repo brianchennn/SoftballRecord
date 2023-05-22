@@ -235,11 +235,18 @@ const ScoreBoard = ({ currentInning, isBottom, scores, history }) => {
   )
 }
 
-const OutBoard = ({ currentOuts }) => {
-  var outs = currentOuts
-  if (outs === 3) {
+const OutBoard = ({ history }) => {
+  var outs = 0
+  if (history.length === 0) {
+    outs = 0
+  } else {
+    outs = history.at(-1).currentOuts
+  }
+  // eslint-disable-next-line
+  if (outs == 3) {
     outs = 0
   }
+
   const O1 = Array.from({length: outs}, (_, index) => index)
   const O2 = Array.from({length: 2 - outs}, (_, index) => index)
   return (
@@ -344,10 +351,10 @@ const BattingResult = ({ setBattingResult }) => {
   )
 }
 
-const Outs = ({ setOuts }) => {
+const Outs = ({ setCurrentOuts }) => {
   const Result = ['', '0', '1', '2', '3'];
 
-  const handleChange = event => setOuts(event.target.value)
+  const handleChange = event => setCurrentOuts(event.target.value)
 
   return (
     <InputStyle>
@@ -401,7 +408,7 @@ const HistoryArea = ({ history }) => {
                 <td key={index.toString() + "playerNumber"}>{hist.playerNumber}</td>
                 <td key={index.toString() + "direction"}>{hist.direction}</td>
                 <td key={index.toString() + "battingResult"}>{hist.battingResult}</td>
-                <td key={index.toString() + "outs"}>{hist.outs}</td>
+                <td key={index.toString() + "outs"}>{hist.currentOuts}</td>
                 <td key={index.toString() + "rbi"}>{hist.rbi} </td>
               </tr>
             
@@ -443,7 +450,6 @@ function RecordApp() {
   const [playerNumber, setPlayerNumber] = useState("")
   const [direction, setDirection] = useState("")
   const [battingResult, setBattingResult] = useState("")
-  const [outs, setOuts] = useState("")
   const [rbi, setRbi] = useState(0)
   const [accuScore, setAccuScore] = useState(0)
   const [isBottom, setBottom] = useState(0);
@@ -458,7 +464,7 @@ function RecordApp() {
     scores[isBottom][currentInning-1] = accuScore
     setAccuScore(0)
     setScores(scores)
-    setOuts(0)
+    setCurrentOuts(0)
     if (isBottom === 0) {
       setBottom(1)
     } else {
@@ -469,9 +475,8 @@ function RecordApp() {
 
   const setByLastHistory = () => {
     setCurrentPa(history[history.length-1].currentPa)
-    setCurrentOuts(history[history.length-1].outs)
+    setCurrentOuts(history[history.length-1].currentOuts)
     setCurrentInning(history[history.length-1].inning)
-    
     setAccuScore(
       history.filter(hist => hist.inning === currentInning && hist.team === (isBottom ? HomeTeam : GuestTeam))
           .reduce((sum, a) => sum + a.rbi, 0)
@@ -489,13 +494,13 @@ function RecordApp() {
       playerNumber: playerNumber,
       direction: direction,
       battingResult: battingResult,
-      outs: outs,
       rbi: rbi,
       currentOuts: currentOuts,
-      accuScore: accuScore
+      accuScore: accuScore,
+      currentPa: currentPa+1
     }])
-
   }
+
   const handleUndoClick = () => {
     if (history.length === 0) {
       return
@@ -503,6 +508,7 @@ function RecordApp() {
     setHistory(history.filter((_, i) => {return i !== history.length-1}))
     // setByLastHistory();
   }
+
   const handleReset = useCallback(() => {
     if (history.length !== 0) {
       setHistory([])
@@ -514,6 +520,7 @@ function RecordApp() {
     setBottom(0)
     setAccuScore(0)
   }, [history.length])
+
   const handleExport = () => {
     var csv = ["\ufeff" + GuestTeam + "\n", "\ufeff" + HomeTeam + "\n"]
 
@@ -523,7 +530,7 @@ function RecordApp() {
       csv[hist.team === GuestTeam ? 0 : 1] += hist.playerNumber + ","
       csv[hist.team === GuestTeam ? 0 : 1] += hist.direction + ","
       csv[hist.team === GuestTeam ? 0 : 1] += hist.battingResult + ","
-      csv[hist.team === GuestTeam ? 0 : 1] += hist.outs + ","
+      csv[hist.team === GuestTeam ? 0 : 1] += hist.currentOuts + ","
       csv[hist.team === GuestTeam ? 0 : 1] += hist.rbi + ","
       csv[hist.team === GuestTeam ? 0 : 1] += "\n"
     })
@@ -561,7 +568,7 @@ function RecordApp() {
 
       </div>
       <OutsContainerStyle>
-        <OutBoard currentOuts={currentOuts} />
+        <OutBoard history={history} />
       </OutsContainerStyle>
 
       
@@ -573,7 +580,7 @@ function RecordApp() {
         <PlayerNumber setPlayerNumber={setPlayerNumber} />
         <Direction setDirection={setDirection} />
         <BattingResult setBattingResult={setBattingResult} />
-        <Outs setOuts={setOuts} />
+        <Outs setCurrentOuts={setCurrentOuts} />
         <Rbi setRbi={setRbi} />
       </PaFormContainerStyle>
       
