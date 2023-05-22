@@ -440,10 +440,6 @@ const Rbi = ({ setRbi }) => {
 
 const HistoryArea = ({ history }) => {
   const attributes = ['隊伍','局數','棒次','背號','打擊方向','打擊結果','出局數','打點']
-  let reversed_history = history
-  reversed_history.reverse()
-  console.log("not reverse: ", history)
-  console.log("reverse: ", reversed_history)
 
   return (
     <HistoryContainerStyle>
@@ -453,7 +449,7 @@ const HistoryArea = ({ history }) => {
       <tr>
         {attributes.map((attr, index) => (<td key={index} width="10% fit-content">{attr}</td>))}
       </tr>
-      {reversed_history.map((hist, index) => (
+      {history.slice().reverse().map((hist, index) => (
               <tr key={index}>
                 <td key={index.toString() + "team"}>{hist.team}</td>
                 <td key={index.toString() + "inning"}>{hist.inning}</td>
