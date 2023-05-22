@@ -26,6 +26,7 @@ const PaFormContainerStyle = styled.div`
 `
 
 const HistoryContainerStyle = styled.div`
+  display: flex;
   border-radius: 50%;
   margin-up: 10px;
   margin-bottom: 10px;
@@ -58,6 +59,7 @@ const ScoreboardStyle = styled.div`
  ;
 `
 const TableStyle = styled.div`
+  display: flex;
   font-size: 30px;
   border-collapse: collapse;
   font-family: 微軟正黑體;
@@ -84,11 +86,8 @@ const ButtonStyle = styled.button`
   border-radius: 10px;
   color: #012311;
   height: 40px;
-  width: 100px;
-  margin-left: 20px;
-  margin-right: 20px;
-  margin-up: 40px;
-  margin-bottom: 40px;
+
+  margin: 20px 20px 40px 40px;
   font-size: 20px;
   text-align: center;
   background-color: ${({bgcolor}) => bgcolor};
@@ -189,24 +188,28 @@ const InningsRow = ({ currentInning, GuestScores }) => {
   )
 }
 
-const Score = ({ score, histLen }) => {
+const Score = ({ score, histLen, currentInning, inn, isBottom, team }) => {
   if (histLen === 0) {
     return (
       <td></td>
     )
   } else {
-    return (
-      <td>
-        {score}
-      </td>
-    )
+    if (currentInning === inn && ((isBottom === 0 && team === "Guest") || (isBottom === 1 && team === "Home"))) {
+      return (
+          <td> <font color="red">{score}</font> </td>
+      )
+    } else {
+      return (
+        <td> {score} </td>
+      )
+    }
   }
 }
 
-const ScoreBoard = ({ currentInning, isBottom, scores, history }) => {
+const ScoreBoard = ({ currentInning, isBottom, history }) => {
   const _9 = Array.from({length: 9}, (_, index) => index+1)
   const guestHistory = history.filter(hist => hist.team === GuestTeam)
-  const HomeHistory = history.filter(hist => hist.team === HomeTeam && hist.inning === currentInning)
+  const homeHistory = history.filter(hist => hist.team === HomeTeam)
   return (
     <ScoreboardStyle>
       <TableStyle>
@@ -218,25 +221,58 @@ const ScoreBoard = ({ currentInning, isBottom, scores, history }) => {
               
               {_9.map((inn, _) => (
                 <Score key={inn} 
-                       score={guestHistory.filter(hist => hist.inning === inn).reduce((sum ,a) => sum + a.rbi, 0)} 
+                       score={
+                              guestHistory.filter(hist => hist.inning === inn).reduce((sum ,a) => sum + a.rbi, 0) + 
+                              guestHistory.filter(hist => hist.inning === inn).filter(hist => hist.battingResult.includes("雙殺得1分")).length + 
+                              guestHistory.filter(hist => hist.inning === inn).filter(hist => hist.battingResult.includes("雙殺得2分")).length * 2 
+                       }
+                       currentInning={currentInning} 
+                       inn={inn}
+                       isBottom={isBottom}
+                       team="Guest"
                        histLen={guestHistory.filter(hist => hist.inning === inn).length} 
-                       />
+                />
               ))}
               
               <td> {/* Run */}
-                {history.filter(hist => hist.team === GuestTeam).reduce((sum, a) => sum + a.rbi, 0)} 
+                {guestHistory.reduce((sum, a) => sum + a.rbi, 0) + 
+                 guestHistory.filter(hist => hist.battingResult.includes("雙殺得1分")).length + 
+                 guestHistory.filter(hist => hist.battingResult.includes("雙殺得2分")).length * 2} 
               </td>
-              
+              <td> {/* Hit */}
+                {guestHistory.filter(hist => hist.battingResult.includes("安打") || hist.battingResult.includes("全壘打")).reduce((sum, a) => sum + 1, 0)} 
+              </td>
+              <td> {/* Error */}
+                {guestHistory.filter(hist => hist.battingResult.includes("失誤")).length} 
+              </td>
             </tr>
             <tr>
               <PrintTeam isBottom={isBottom} team="Home" />
+              
               {_9.map((inn, _) => (
                 <Score key={inn} 
-                       score={HomeHistory.filter(hist => hist.inning === inn).reduce((sum ,a) => sum + a.rbi, 0)} 
-                       histLen={HomeHistory.filter(hist => hist.inning === inn).length} />
+                       score={
+                              homeHistory.filter(hist => hist.inning === inn).reduce((sum ,a) => sum + a.rbi, 0) + 
+                              homeHistory.filter(hist => hist.inning === inn).filter(hist => hist.battingResult.includes("雙殺得1分")).length + 
+                              homeHistory.filter(hist => hist.inning === inn).filter(hist => hist.battingResult.includes("雙殺得2分")).length * 2 
+                       }
+                       currentInning={currentInning}
+                       inn={inn}
+                       isBottom={isBottom}
+                       team="Home"
+                       histLen={homeHistory.filter(hist => hist.inning === inn).length} 
+                />
               ))}
               <td> 
-                {history.filter(hist => hist.team === HomeTeam).reduce((sum, a) => sum + a.rbi, 0)} 
+                {homeHistory.reduce((sum, a) => sum + a.rbi, 0) +
+                 homeHistory.filter(hist => hist.battingResult.includes("雙殺得1分")).length + 
+                 homeHistory.filter(hist => hist.battingResult.includes("雙殺得2分")).length * 2} 
+              </td>
+              <td> {/* Hit */}
+                {homeHistory.filter(hist => hist.battingResult.includes("安打") || hist.battingResult.includes("全壘打")).reduce((sum, a) => sum + 1, 0)} 
+              </td>
+              <td> {/* Error */}
+                {homeHistory.filter(hist => hist.battingResult.includes("失誤")).length} 
               </td>
             </tr>
           </tbody>
@@ -253,7 +289,7 @@ const OutBoard = ({ history }) => {
   } else {
     outs = history.at(-1).currentOuts
   }
-  // eslint-disable-next-line
+
   outs = (outs >= 3) ? 0 : outs
 
 
@@ -343,7 +379,9 @@ const Direction = ({ setDirection }) => {
 }
 
 const BattingResult = ({ setBattingResult }) => {
-  const Result = ['', 'GO (滾地出局)', 'FO (飛球出局)', 'FC (野手選擇)', 'E (對手失誤)', 'K (被三振)', 'BB (保送)', 'SF (高飛犧牲打)', '1B (一壘安打)', '2B (二壘安打)', '3B (三壘安打)', 'HR (全壘打)'];
+  const Result = ['未定義', 'GO (滾地出局)', 'FO (飛球出局)', 'FC (野手選擇)', 'E (對手失誤)', 
+                  'K (被三振)', 'BB (保送)', 'SF (高飛犧牲打)', '1B (一壘安打)', '2B (二壘安打)', 
+                  '3B (三壘安打)', 'HR (全壘打)', 'DP (雙殺)' , 'DP (雙殺得1分)', 'DP (雙殺得2分)'];
 
   const handleChange = event => setBattingResult(event.target.value)
 
@@ -362,7 +400,7 @@ const BattingResult = ({ setBattingResult }) => {
 }
 
 const Outs = ({ setCurrentOuts }) => {
-  const Result = ['', '0', '1', '2', '3'];
+  const Result = [0, 1, 2, 3];
 
   const handleChange = event => setCurrentOuts(event.target.value)
 
@@ -402,6 +440,11 @@ const Rbi = ({ setRbi }) => {
 
 const HistoryArea = ({ history }) => {
   const attributes = ['隊伍','局數','棒次','背號','打擊方向','打擊結果','出局數','打點']
+  let reversed_history = history
+  reversed_history.reverse()
+  console.log("not reverse: ", history)
+  console.log("reverse: ", reversed_history)
+
   return (
     <HistoryContainerStyle>
       <HistoryTableStyle>
@@ -410,7 +453,7 @@ const HistoryArea = ({ history }) => {
       <tr>
         {attributes.map((attr, index) => (<td key={index} width="10% fit-content">{attr}</td>))}
       </tr>
-      {history.map((hist, index) => (
+      {reversed_history.map((hist, index) => (
               <tr key={index}>
                 <td key={index.toString() + "team"}>{hist.team}</td>
                 <td key={index.toString() + "inning"}>{hist.inning}</td>
@@ -558,8 +601,6 @@ function RecordApp() {
     setByLastHistory();
     // eslint-disable-next-line
   }, [history])
-
-  console.log(history)
   
   const updateGuestTeam = event => {
     GuestTeam = event.target.value
@@ -582,7 +623,9 @@ function RecordApp() {
           <label>Home Team: </label>
           <input onChange={updateHomeTeam}></input>
         </InputStyle>
-        <button onClick={handleStart}>Start</button>
+        <ButtonStyle onClick={handleStart}>
+          Start
+        </ButtonStyle>
       </OutsContainerStyle>
     )
   }
