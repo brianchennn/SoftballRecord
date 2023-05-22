@@ -147,27 +147,27 @@ const Inning = ({ currentInning, targetInning }) => {
   }
 }
 
-const PrintGuestTeam = ({ isBottom }) => {
-  if (isBottom === 0) {
-    return (
-        <td><font color="red">{GuestTeam}</font></td>
-    )
-  } else {
-    return (
-        <td key={GuestTeam}>{GuestTeam}</td>
-    )
-  }
-}
-
-const PrintHomeTeam = ({ isBottom }) => {
-  if (isBottom === 1) {
-    return (
-      <td><font color="red">{HomeTeam}</font></td>
-    )
-  } else {
-    return (  
-        <td key={HomeTeam}>{HomeTeam}</td>
-    )
+const PrintTeam = ({ isBottom, team }) => {
+  if (team === "Guest") {
+    if (isBottom === 0) {
+      return (
+          <td><font color="red">{GuestTeam}</font></td>
+      )
+    } else {
+      return (
+          <td><font color="black">{GuestTeam}</font></td>
+      )
+    }
+  } else if (team === "Home") {
+    if (isBottom === 1) {
+      return (
+          <td><font color="red">{HomeTeam}</font></td>
+      )
+    } else {
+      return (
+          <td><font color="black">{HomeTeam}</font></td>
+      )
+    }
   }
 }
 
@@ -209,7 +209,7 @@ const ScoreBoard = ({ currentInning, isBottom, scores, history }) => {
           <tbody>
             <InningsRow currentInning={currentInning} />
             <tr>
-              <PrintGuestTeam isBottom={isBottom} GuestScores={scores[0]} />
+              <PrintTeam isBottom={isBottom} team="Guest" />
               {scores[0].map((score, index) => (
                 <Score key={index} score={score} />
               ))}
@@ -220,7 +220,7 @@ const ScoreBoard = ({ currentInning, isBottom, scores, history }) => {
               
             </tr>
             <tr>
-              <PrintHomeTeam isBottom={isBottom} />
+              <PrintTeam isBottom={isBottom} team="Home" />
               {scores[1].map((score, index) => (
                 <Score key={index} score={score} />
               ))}
