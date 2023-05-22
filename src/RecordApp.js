@@ -2,8 +2,8 @@ import './App.css';
 import styled from '@emotion/styled'
 import { useState, useEffect, useCallback } from 'react'
 
-const GuestTeam = "Yankees"
-const HomeTeam = "Red Sox"
+var GuestTeam = "Yankees"
+var HomeTeam = "Red Sox"
 
 const OutsContainerStyle = styled.div`
   border-radius: 50%;
@@ -40,6 +40,8 @@ const InputStyle = styled.div`
   font-family: 微軟正黑體;
   margin-left: 20px;
   margin-right: 20px;
+  margin-up: 20px;
+  margin-bottom: 20px;
 `
 const HeaderStyle = styled.div`
   font-color: #010101;
@@ -187,8 +189,8 @@ const InningsRow = ({ currentInning, GuestScores }) => {
   )
 }
 
-const Score = ({ score }) => {
-  if (score === -1) {
+const Score = ({ score, histLen }) => {
+  if (histLen === 0) {
     return (
       <td></td>
     )
@@ -202,6 +204,9 @@ const Score = ({ score }) => {
 }
 
 const ScoreBoard = ({ currentInning, isBottom, scores, history }) => {
+  const _9 = Array.from({length: 9}, (_, index) => index+1)
+  const guestHistory = history.filter(hist => hist.team === GuestTeam)
+  const HomeHistory = history.filter(hist => hist.team === HomeTeam && hist.inning === currentInning)
   return (
     <ScoreboardStyle>
       <TableStyle>
@@ -210,8 +215,12 @@ const ScoreBoard = ({ currentInning, isBottom, scores, history }) => {
             <InningsRow currentInning={currentInning} />
             <tr>
               <PrintTeam isBottom={isBottom} team="Guest" />
-              {scores[0].map((score, index) => (
-                <Score key={index} score={score} />
+              
+              {_9.map((inn, _) => (
+                <Score key={inn} 
+                       score={guestHistory.filter(hist => hist.inning === inn).reduce((sum ,a) => sum + a.rbi, 0)} 
+                       histLen={guestHistory.filter(hist => hist.inning === inn).length} 
+                       />
               ))}
               
               <td> {/* Run */}
@@ -221,8 +230,10 @@ const ScoreBoard = ({ currentInning, isBottom, scores, history }) => {
             </tr>
             <tr>
               <PrintTeam isBottom={isBottom} team="Home" />
-              {scores[1].map((score, index) => (
-                <Score key={index} score={score} />
+              {_9.map((inn, _) => (
+                <Score key={inn} 
+                       score={HomeHistory.filter(hist => hist.inning === inn).reduce((sum ,a) => sum + a.rbi, 0)} 
+                       histLen={HomeHistory.filter(hist => hist.inning === inn).length} />
               ))}
               <td> 
                 {history.filter(hist => hist.team === HomeTeam).reduce((sum, a) => sum + a.rbi, 0)} 
@@ -441,7 +452,8 @@ function exportToCsv(filename, csvFile) {
 }
 
 function RecordApp() {
-  const [history, setHistory] = useState([{}])
+  const [isTeamNameSet, setIsTeamNameSet] = useState(0) 
+  const [history, setHistory] = useState([])
   const [currentInning, setCurrentInning] = useState(1)
   const [currentOuts, setCurrentOuts] = useState(0)
   const [currentPa, setCurrentPa] = useState(0)
@@ -549,6 +561,32 @@ function RecordApp() {
 
   console.log(history)
   
+  const updateGuestTeam = event => {
+    GuestTeam = event.target.value
+  }
+  const updateHomeTeam = event => {
+    HomeTeam = event.target.value
+  }
+  const handleStart = () => {
+    setIsTeamNameSet(1)
+  }
+  if (isTeamNameSet === 0) {
+    return (
+      <OutsContainerStyle>
+        <Header />
+        <InputStyle>
+          <label>Guest Team: </label>
+          <input onChange={updateGuestTeam}></input>
+        </InputStyle>
+        <InputStyle>
+          <label>Home Team: </label>
+          <input onChange={updateHomeTeam}></input>
+        </InputStyle>
+        <button onClick={handleStart}>Start</button>
+      </OutsContainerStyle>
+    )
+  }
+
   return (
     <>
       <div>
