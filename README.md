@@ -1,3 +1,28 @@
+# 環境設置
+1. 安裝相應套件: ```npm install```
+2. run server: ```npm start```
+3. 使用瀏覽器開啟:
+http://localhost:3000/SoftballRecord
+# 功能說明
+
+1. 進去網頁後，先輸入球隊名稱
+
+![image](https://github.com/brianchennn/SoftballRecord/assets/46628572/87d0234e-123b-4937-b65f-4abd7830e233)
+
+2. 開始本場比賽的紀錄，按鈕對應到以下功能:
+  - Change: 換場 (目前必須手動按)
+  - Export: 輸出 csv
+  - Reset: 重置本場比賽
+  - 送出: 此打席的結果
+  - Undo: 輸入錯誤時可以按
+  
+![image](https://github.com/brianchennn/SoftballRecord/assets/46628572/3ece5405-6b63-46f0-ad1c-e5b4e9879fd1)
+
+# TODO:
+1. 希望資料能暫存在 cookie。
+2. 改進輸出 csv 的格式。
+3. 後端資料庫 (mongodb)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
