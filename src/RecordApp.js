@@ -15,28 +15,19 @@ const OutsContainerStyle = styled.div`
   width: 100%;
 `
 const PaFormContainerStyle = styled.div`
+  margin-up: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+  text-align: center;
+  width: 100%
+`
+const HistoryContainerStyle = styled.div`
   border-radius: 50%;
   margin-up: 10px;
   margin-bottom: 10px;
   align-items: center;
-  text-align: left;
-  width: 400px;
-  float:left;
-`
-const HistoryContainerStyle = styled.div`
-  display: flex;
-  border-radius: 50%;
-  margin-up: 10px;
-  margin-bottom: 10px;
-  align-items: right;
-  text-align: right;
-  width: 1000px;
-  float:left;
-`
-const PaFormHistoryContainerStyle = styled.div`
-  display: flex;
-  margin:0px auto;
-  width: 90%;
+  text-align: center;
+  width: 100%
 `
 const InputStyle = styled.div`
   font-font-size-adjust: 0.90;
@@ -69,18 +60,14 @@ const TableStyle = styled.div`
   align-items: center;
   text-align: center;
 `
-const HistoryTableStyle = styled.div`
-  margin: 15px;
+const HistoryTableStyle = styled.table`
+  margin:0px auto;
   border-style: solid;
   border: 1px dotted;
   font-size: 15px;
-  border-collapse: seperate;
+  border-collapse: collapse;
   font-family: 微軟正黑體;
-  align-content: center;
-  align-self: up;
-  align-items: center;
-  text-align: center;
-  width: 700px;
+  width: 80%;
 `
 const ButtonStyle = styled.button`
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -448,10 +435,10 @@ const HistoryArea = ({ history }) => {
   return (
     <HistoryContainerStyle>
       <HistoryTableStyle>
-      <table>
+
       <tbody>
       <tr>
-        {attributes.map((attr, index) => (<td key={index} width="10% fit-content">{attr}</td>))}
+        {attributes.map((attr, index) => (<td key={index}>{attr}</td>))}
       </tr>
       {history.slice().reverse().map((hist, index) => (
               <tr key={index}>
@@ -468,7 +455,7 @@ const HistoryArea = ({ history }) => {
           
         ))}
         </tbody>
-        </table>
+
         </HistoryTableStyle>
     </HistoryContainerStyle>
   )
@@ -648,21 +635,21 @@ function RecordApp() {
         <OutBoard history={history} />
       </OutsContainerStyle>
 
-      <PaFormHistoryContainerStyle>
-        <PaFormContainerStyle>
-          <ButtonStyle onClick={handleSendClick}> 送出 </ButtonStyle>
-          <ButtonStyle onClick={handleUndoClick}> Undo </ButtonStyle>
-          <p>打席數: {currentPa}</p>
-          <BattingOrder setBattingOrder={setBattingOrder} />
-          <PlayerNumber setPlayerNumber={setPlayerNumber} />
-          <Direction setDirection={setDirection} />
-          <BattingResult setBattingResult={setBattingResult} />
-          <Outs setCurrentOuts={setCurrentOuts} />
-          <Rbi setRbi={setRbi} />
-        </PaFormContainerStyle>
-      
-        <HistoryArea history={history} isBottom={isBottom} />
-      </PaFormHistoryContainerStyle>
+
+      <PaFormContainerStyle>
+        <ButtonStyle onClick={handleSendClick}> 送出 </ButtonStyle>
+        <ButtonStyle onClick={handleUndoClick}> Undo </ButtonStyle>
+        <p>打席數: {currentPa}</p>
+        <BattingOrder setBattingOrder={setBattingOrder} />
+        <PlayerNumber setPlayerNumber={setPlayerNumber} />
+        <Direction setDirection={setDirection} />
+        <BattingResult setBattingResult={setBattingResult} />
+        <Outs setCurrentOuts={setCurrentOuts} />
+        <Rbi setRbi={setRbi} />
+      </PaFormContainerStyle>
+    
+      <HistoryArea history={history} isBottom={isBottom} />
+
     </>
   );
 }
