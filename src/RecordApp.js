@@ -14,7 +14,6 @@ const OutsContainerStyle = styled.div`
   text-align: center;
   width: 100%;
 `
-
 const PaFormContainerStyle = styled.div`
   border-radius: 50%;
   margin-up: 10px;
@@ -24,7 +23,6 @@ const PaFormContainerStyle = styled.div`
   width: 400px;
   float:left;
 `
-
 const HistoryContainerStyle = styled.div`
   display: flex;
   border-radius: 50%;
@@ -35,7 +33,11 @@ const HistoryContainerStyle = styled.div`
   width: 1000px;
   float:left;
 `
-
+const PaFormHistoryContainerStyle = styled.div`
+  display: flex;
+  margin:0px auto;
+  width: 90%;
+`
 const InputStyle = styled.div`
   font-font-size-adjust: 0.90;
   font-family: 微軟正黑體;
@@ -52,16 +54,15 @@ const HeaderStyle = styled.div`
   ;
 `
 const ScoreboardStyle = styled.div`
- display: flex;
- width: 100%;
- text-align: center;
- border:1px solid #000;
- ;
+  margin:0px auto;
+  display: flex;
+  width: 100%;
+  text-align: center;
 `
 const TableStyle = styled.div`
+  margin:0px auto;
   display: flex;
   font-size: 30px;
-  border-collapse: collapse;
   font-family: 微軟正黑體;
   align-content: center;
   align-self: center;
@@ -76,7 +77,7 @@ const HistoryTableStyle = styled.div`
   border-collapse: seperate;
   font-family: 微軟正黑體;
   align-content: center;
-  align-self: center;
+  align-self: up;
   align-items: center;
   text-align: center;
   width: 700px;
@@ -96,6 +97,11 @@ const ButtonStyle = styled.button`
   };
   
 `
+const ButtonContainerStyle = styled.div`
+ margin:0px auto;
+ width: 100%;
+ text-align: center;
+`
 const CurrentInningStyle = styled.div`
   color: red;
 `
@@ -110,7 +116,6 @@ const OutSign = styled.div`
   margin-right: 5px;
   background-color: lightgrey;
 `
-
 const OutSign2 = styled.div`
   display: inline-block;
   width: 20px;
@@ -315,7 +320,7 @@ const OutBoard = ({ history }) => {
 const ButtonArea = ({ handleChange, handleReset, handleExport }) => {
 
   return (
-    <>
+    <ButtonContainerStyle>
       <ButtonStyle onClick={handleChange} bgcolor={'#66B3FF'}>
         Change
       </ButtonStyle>
@@ -325,7 +330,7 @@ const ButtonArea = ({ handleChange, handleReset, handleExport }) => {
       <ButtonStyle onClick={handleReset} bgcolor={'#FF8040'}>
         Reset
       </ButtonStyle>
-    </>
+    </ButtonContainerStyle>
   )
 }
 
@@ -437,7 +442,6 @@ const Rbi = ({ setRbi }) => {
   )
 }
 
-
 const HistoryArea = ({ history }) => {
   const attributes = ['隊伍','局數','棒次','背號','打擊方向','打擊結果','出局數','打點']
 
@@ -471,7 +475,6 @@ const HistoryArea = ({ history }) => {
 }
 
 function exportToCsv(filename, csvFile) {
-
   var blob = new Blob([csvFile], { type: 'text/csv;charset=unicode;' });
   if (navigator.msSaveBlob) { // IE 10+
       navigator.msSaveBlob(blob, filename);
@@ -634,35 +637,32 @@ function RecordApp() {
           handleChange={handleChange} 
           handleReset={handleReset} 
           handleExport={handleExport} />
-        
         <ScoreBoard
           currentInning={currentInning}
           isBottom={isBottom}
           scores={scores}
           history={history}
           />
-
       </div>
       <OutsContainerStyle>
         <OutBoard history={history} />
       </OutsContainerStyle>
 
+      <PaFormHistoryContainerStyle>
+        <PaFormContainerStyle>
+          <ButtonStyle onClick={handleSendClick}> 送出 </ButtonStyle>
+          <ButtonStyle onClick={handleUndoClick}> Undo </ButtonStyle>
+          <p>打席數: {currentPa}</p>
+          <BattingOrder setBattingOrder={setBattingOrder} />
+          <PlayerNumber setPlayerNumber={setPlayerNumber} />
+          <Direction setDirection={setDirection} />
+          <BattingResult setBattingResult={setBattingResult} />
+          <Outs setCurrentOuts={setCurrentOuts} />
+          <Rbi setRbi={setRbi} />
+        </PaFormContainerStyle>
       
-      <PaFormContainerStyle>
-        <ButtonStyle onClick={handleSendClick}> 送出 </ButtonStyle>
-        <ButtonStyle onClick={handleUndoClick}> Undo </ButtonStyle>
-        <p>打席數: {currentPa}</p>
-        <BattingOrder setBattingOrder={setBattingOrder} />
-        <PlayerNumber setPlayerNumber={setPlayerNumber} />
-        <Direction setDirection={setDirection} />
-        <BattingResult setBattingResult={setBattingResult} />
-        <Outs setCurrentOuts={setCurrentOuts} />
-        <Rbi setRbi={setRbi} />
-      </PaFormContainerStyle>
-      
-      
-      <HistoryArea history={history} isBottom={isBottom} />
-      
+        <HistoryArea history={history} isBottom={isBottom} />
+      </PaFormHistoryContainerStyle>
     </>
   );
 }
