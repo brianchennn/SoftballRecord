@@ -562,9 +562,11 @@ function RecordApp() {
   }, [history.length])
 
   const handleExport = () => {
-    var csv = ["\ufeff" + GuestTeam + "\n", "\ufeff" + HomeTeam + "\n"]
+    var csv = ["\ufeff" + GuestTeam + ",局數,棒次,背號,打擊方向,打擊結果,出局數,打點\n",
+               "\ufeff" + HomeTeam + ",局數,棒次,背號,打擊方向,打擊結果,出局數,打點\n"]
 
     history.forEach(hist => {
+      csv[hist.team === GuestTeam ? 0 : 1] += ","
       csv[hist.team === GuestTeam ? 0 : 1] += hist.inning + ","
       csv[hist.team === GuestTeam ? 0 : 1] += hist.battingOrder + ","
       csv[hist.team === GuestTeam ? 0 : 1] += hist.playerNumber + ","

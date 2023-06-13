@@ -16,7 +16,7 @@ http://localhost:3000/SoftballRecord
   - 送出: 此打席的結果
   - Undo: 輸入錯誤時可以按
   
-![image](https://github.com/brianchennn/SoftballRecord/assets/46628572/3ece5405-6b63-46f0-ad1c-e5b4e9879fd1)
+![image](https://github.com/brianchennn/SoftballRecord/assets/46628572/47fea351-14f3-441c-a0c9-4ed3ee6a1db6)
 
 # TODO:
 1. 希望資料能暫存在 cookie。
