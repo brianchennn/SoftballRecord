@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/SoftballRecord/static/css/main.073c9b0a.css",
-    "main.js": "/SoftballRecord/static/js/main.97ffb2b8.js",
+    "main.css": "/SoftballRecord/static/css/main.ad05a778.css",
+    "main.js": "/SoftballRecord/static/js/main.4da9752d.js",
     "static/js/787.91b4158f.chunk.js": "/SoftballRecord/static/js/787.91b4158f.chunk.js",
     "index.html": "/SoftballRecord/index.html",
-    "main.073c9b0a.css.map": "/SoftballRecord/static/css/main.073c9b0a.css.map",
-    "main.97ffb2b8.js.map": "/SoftballRecord/static/js/main.97ffb2b8.js.map",
+    "main.ad05a778.css.map": "/SoftballRecord/static/css/main.ad05a778.css.map",
+    "main.4da9752d.js.map": "/SoftballRecord/static/js/main.4da9752d.js.map",
     "787.91b4158f.chunk.js.map": "/SoftballRecord/static/js/787.91b4158f.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.073c9b0a.css",
-    "static/js/main.97ffb2b8.js"
+    "static/css/main.ad05a778.css",
+    "static/js/main.4da9752d.js"
   ]
 }
