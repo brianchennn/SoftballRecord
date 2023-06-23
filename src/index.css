@@ -7,7 +7,168 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+button {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  margin: 5px;
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.8;
+  };
+}
+
+select, input {
+  margin: 10px;
+  padding: 5px;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+input:focus, select:focus {
+  outline: none;
+}
+
+input[type="submit"] {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+}
+
+th, td {
+  width: fit-content;
+  min-width: 60px;
+  padding: 5px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #007bff;
+  color: #fff;
+  font-weight: bold;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+@media screen and (max-width: 600px) {
+  form {
+      flex-direction: column;
+      justify-self: unset;
+      align-items: unset;
+  }
+}
+
+.header {
+  color: #010101;
+  font-size: 40px;
+  width: 100%;
+  text-align: center;
+}
+
+.input-field {
+  font-size-adjust: 0.90;
+  font-family: 微軟正黑體;
+  margin: 3px;
+}
+
+.out-sign {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.out {
+  background-color: yellow;
+}
+
+.no-out {
+  background-color: lightgrey;
+}
+
+#init-form-container {
+  text-align: center;
+}
+
+#scoreboard {
+  margin: 0px auto;
+  display: flex;
+  width: 100%;
+  text-align: center;
+}
+
+#scoreboard table {
+  margin: 10px auto;
+  font-size: larger;
+  font-family: 微軟正黑體;
+  border-collapse: collapse;
+  white-space: nowrap;
+  width: 90vw;
+}
+
+#outs-container {
+  border-radius: 50%;
+  display: inline-block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+#operation-container {
+  margin: 0px auto;
+  width: 90vw;
+  /* text-align: center; */
+}
+
+#history-container {
+  border-radius: 50%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+  width: 90vw;
+}
+
+#history-container table {
+  margin: 0px auto;
+  border: 1px dotted solid;
+  margin: 10px auto;
+  font-size: 15px;
+  font-family: 微軟正黑體;
+  border-collapse: collapse;
+  white-space: nowrap;
+  width: 80vw;
+}
+
+#paform-container {
+  margin: 10px auto;
+  padding: 5px;
+  text-align: center;
+  width: 90vw;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+@media screen and (max-width: 900px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+  }
 }
