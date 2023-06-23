@@ -170,7 +170,7 @@ function RecordApp() {
       <div>
         <Header />
         <div id='operation-container'>
-          <button onClick={handleChange} style={{ backgroundColor: "#66B3FF" }}>
+          <button onClick={handleChange}>
             Change
           </button>
           <button onClick={handleExport} style={{ backgroundColor: "#02DF82" }}>
@@ -192,15 +192,18 @@ function RecordApp() {
       <OutBoard history={history} />
 
       <div id='paform-container'>
+        <p>打席數: {currentPa}</p>
+        <form>
+          <BattingOrder setBattingOrder={setBattingOrder} />
+          <PlayerNumber setPlayerNumber={setPlayerNumber} />
+          <Direction setDirection={setDirection} />
+          <BattingResult setBattingResult={setBattingResult} />
+          <Outs setCurrentOuts={setCurrentOuts} />
+          <Rbi setRbi={setRbi} />
+          <br />
+        </form>
         <button onClick={handleSendClick}> 送出 </button>
         <button onClick={handleUndoClick}> Undo </button>
-        <p>打席數: {currentPa}</p>
-        <BattingOrder setBattingOrder={setBattingOrder} />
-        <PlayerNumber setPlayerNumber={setPlayerNumber} />
-        <Direction setDirection={setDirection} />
-        <BattingResult setBattingResult={setBattingResult} />
-        <Outs setCurrentOuts={setCurrentOuts} />
-        <Rbi setRbi={setRbi} />
       </div>
 
       <HistoryArea history={history} isBottom={isBottom} />
