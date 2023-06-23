@@ -11,3 +11,112 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+table {
+  margin: 0px auto;
+  display: flex;
+  font-size: 30px;
+  font-family: 微軟正黑體;
+  align-content: center;
+  align-self: center;
+  align-items: center;
+  text-align: center;
+}
+
+button {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  height: 40px;
+  margin: 20px 20px 40px 40px;
+  font-size: 20px;
+  text-align: center;
+  &:hover {
+    opacity: 0.8;
+  };
+}
+
+.header {
+  color: #010101;
+  font-size: 40px;
+  width: 100%;
+  text-align: center;
+}
+
+.input-field {
+  font-size-adjust: 0.90;
+  font-family: 微軟正黑體;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.out-sign {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.out {
+  background-color: yellow;
+}
+
+.no-out {
+  background-color: lightgrey;
+}
+
+#init-form-container {
+  text-align: center;
+}
+
+#scoreboard {
+  margin: 0px auto;
+  display: flex;
+  width: 100%;
+  text-align: center;
+}
+
+#outs-container {
+  border-radius: 50%;
+  display: inline-block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+#operation-container {
+  margin: 0px auto;
+  width: 100%;
+  text-align: center;
+}
+
+#history-container {
+  border-radius: 50%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+#history-container table {
+  margin: 0px auto;
+  border-style: solid;
+  border: 1px dotted;
+  font-size: 15px;
+  border-collapse: collapse;
+  font-family: 微軟正黑體;
+  width: 80%;
+}
+
+#paform-container {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
