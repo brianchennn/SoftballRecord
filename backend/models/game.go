@@ -1,10 +1,12 @@
+package models
+
 import (
-        "softball_record/models"
+        "time"
 )
 
 type Record struct {
     Team string `json:"team"`
-    Player models.Player `json:"player"`
+    Player HittingPlayer `json:"player"`
     Number int `json:"number"`
     Order int `json:"order"`
     Position int `json:"position"`
@@ -15,7 +17,6 @@ type Record struct {
 }
 
 type Game struct {
-    ID int `json:"id"`
     HomeTeam string `json:"home_team"`
     AwayTeam string `json:"away_team"`
     HomeScore int `json:"home_score"`

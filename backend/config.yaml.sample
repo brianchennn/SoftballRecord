@@ -1,2 +1,3 @@
 db:
   host: host_uri
+  name: db_name

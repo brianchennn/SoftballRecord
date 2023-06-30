@@ -23,7 +23,23 @@ func Init() {
     fmt.Println("Connected to DB")
 }
 
-func GetClient() *mongo.Client {
-    return client
+func GetDB() *mongo.Database {
+    return client.Database(config.GetConfig().GetString("db.name"))
+}
+
+func GetHittingPlayerCollection() *mongo.Collection {
+    return GetDB().Collection("hitting_players")
+}
+
+func GetPitchingPlayerCollection() *mongo.Collection {
+    return GetDB().Collection("pitching_players")
+}
+
+func GetTeamCollection() *mongo.Collection {
+    return GetDB().Collection("teams")
+}
+
+func GetGameCollection() *mongo.Collection {
+    return GetDB().Collection("games")
 }
 
