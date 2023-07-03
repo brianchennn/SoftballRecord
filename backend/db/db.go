@@ -1,45 +1,44 @@
 package db
 
 import (
-        "go.mongodb.org/mongo-driver/mongo"
-        "go.mongodb.org/mongo-driver/mongo/options"
-        "softball_record/config"
-        "fmt"
-        "context"
+	"context"
+	//"log"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"softball_record/config"
 )
 
 var client *mongo.Client
 
 func Init() {
-    config := config.GetConfig()
-    fmt.Println("Connecting to DB: ", config.GetString("db.host"))
-    serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-    opts := options.Client().ApplyURI(config.GetString("db.host")).SetServerAPIOptions(serverAPI)
-    var err error
-    client, err = mongo.Connect(context.TODO(), opts)
-    if err != nil {
-        panic(err)
-    }
-    fmt.Println("Connected to DB")
+	config := config.GetConfig()
+	//log.Println("Connecting to DB...")
+	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
+	opts := options.Client().ApplyURI(config.GetString("db.host")).SetServerAPIOptions(serverAPI)
+	var err error
+	client, err = mongo.Connect(context.Background(), opts)
+	if err != nil {
+		panic(err)
+	}
+	//log.Println("Connected to DB.")
 }
 
 func GetDB() *mongo.Database {
-    return client.Database(config.GetConfig().GetString("db.name"))
+	return client.Database(config.GetConfig().GetString("db.name"))
 }
 
 func GetHittingPlayerCollection() *mongo.Collection {
-    return GetDB().Collection("hitting_players")
+	return GetDB().Collection("hitting_players")
 }
 
 func GetPitchingPlayerCollection() *mongo.Collection {
-    return GetDB().Collection("pitching_players")
+	return GetDB().Collection("pitching_players")
 }
 
 func GetTeamCollection() *mongo.Collection {
-    return GetDB().Collection("teams")
+	return GetDB().Collection("teams")
 }
 
 func GetGameCollection() *mongo.Collection {
-    return GetDB().Collection("games")
+	return GetDB().Collection("games")
 }
-
