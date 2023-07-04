@@ -1,2 +1,3 @@
 softball_record
-*.yaml
+production.yaml
+development.yaml
