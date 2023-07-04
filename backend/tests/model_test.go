@@ -18,13 +18,17 @@ type HittingPlayerTestSuite struct {
 	col *mongo.Collection
 }
 
-func (suite *HittingPlayerTestSuite) SetupTest() {
+func (suite *HittingPlayerTestSuite) SetupSuite() {
 	// setup
 	config.Init("testing")
 	db.Init()
+	suite.col = db.GetHittingPlayerCollection()
+}
+
+func (suite *HittingPlayerTestSuite) SetupTest() {
+	// setup
 	h1 := models.HittingPlayer{Name: "test"}
 	h2 := models.HittingPlayer{Name: "test2"}
-	suite.col = db.GetHittingPlayerCollection()
 	suite.col.InsertOne(context.Background(), h1)
 	suite.col.InsertOne(context.Background(), h2)
 }
@@ -72,13 +76,17 @@ type PitchingPlayerTestSuite struct {
 	col *mongo.Collection
 }
 
-func (suite *PitchingPlayerTestSuite) SetupTest() {
+func (suite *PitchingPlayerTestSuite) SetupSuite() {
 	// setup
 	config.Init("testing")
 	db.Init()
+	suite.col = db.GetPitchingPlayerCollection()
+}
+
+func (suite *PitchingPlayerTestSuite) SetupTest() {
+	// setup
 	p1 := models.PitchingPlayer{Name: "test"}
 	p2 := models.PitchingPlayer{Name: "test2"}
-	suite.col = db.GetPitchingPlayerCollection()
 	suite.col.InsertOne(context.Background(), p1)
 	suite.col.InsertOne(context.Background(), p2)
 }

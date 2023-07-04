@@ -30,10 +30,6 @@ func (suite *TeamTestSuite) SetupTest() {
 	suite.col.InsertOne(context.Background(), t2)
 }
 
-func (suite *TeamTestSuite) TearDownSuite() {
-	suite.col.DeleteMany(context.Background(), bson.M{})
-}
-
 func (suite *TeamTestSuite) TearDownTest() {
 	suite.col.DeleteMany(context.Background(), bson.M{})
 }
