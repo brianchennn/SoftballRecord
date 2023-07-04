@@ -17,6 +17,8 @@ http://localhost:3000/SoftballRecord
   - Undo: 輸入錯誤時可以按
   
 ![image](https://github.com/brianchennn/SoftballRecord/assets/46628572/47fea351-14f3-441c-a0c9-4ed3ee6a1db6)
+# 與 Discord 連結
+- 使用 webhook
 
 # TODO:
 1. 希望資料能暫存在 cookie。
