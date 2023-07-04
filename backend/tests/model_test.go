@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"softball_record/config"
 	"softball_record/db"
 	"softball_record/models"
@@ -14,6 +15,7 @@ import (
 // HittingPlayerTestSuite
 type HittingPlayerTestSuite struct {
 	suite.Suite
+	col *mongo.Collection
 }
 
 func (suite *HittingPlayerTestSuite) SetupTest() {
@@ -22,15 +24,14 @@ func (suite *HittingPlayerTestSuite) SetupTest() {
 	db.Init()
 	h1 := models.HittingPlayer{Name: "test"}
 	h2 := models.HittingPlayer{Name: "test2"}
-	col := db.GetHittingPlayerCollection()
-	col.InsertOne(context.Background(), h1)
-	col.InsertOne(context.Background(), h2)
+	suite.col = db.GetHittingPlayerCollection()
+	suite.col.InsertOne(context.Background(), h1)
+	suite.col.InsertOne(context.Background(), h2)
 }
 
 func (suite *HittingPlayerTestSuite) TearDownTest() {
 	// teardown
-	col := db.GetHittingPlayerCollection()
-	col.DeleteMany(context.Background(), bson.M{})
+	suite.col.DeleteMany(context.Background(), bson.M{})
 }
 
 func (suite *HittingPlayerTestSuite) TestGetHittingPlayerByName() {
@@ -53,7 +54,8 @@ func (suite *HittingPlayerTestSuite) TestCreateHittingPlayer() {
 
 func (suite *HittingPlayerTestSuite) TestUpdateHittingPlayer() {
 	assert := assert.New(suite.T())
-	player := models.GetHittingPlayerByName("test")
+	var player models.HittingPlayer
+	suite.col.FindOne(context.Background(), bson.M{"name": "test"}).Decode(&player)
 	player.AB = 1
 	models.UpdateHittingPlayer(player)
 	player = models.GetHittingPlayerByName("test")
@@ -67,6 +69,7 @@ func TestHittingPlayerTestSuite(t *testing.T) {
 // PitchingPlayerTestSuite
 type PitchingPlayerTestSuite struct {
 	suite.Suite
+	col *mongo.Collection
 }
 
 func (suite *PitchingPlayerTestSuite) SetupTest() {
@@ -75,15 +78,14 @@ func (suite *PitchingPlayerTestSuite) SetupTest() {
 	db.Init()
 	p1 := models.PitchingPlayer{Name: "test"}
 	p2 := models.PitchingPlayer{Name: "test2"}
-	col := db.GetPitchingPlayerCollection()
-	col.InsertOne(context.Background(), p1)
-	col.InsertOne(context.Background(), p2)
+	suite.col = db.GetPitchingPlayerCollection()
+	suite.col.InsertOne(context.Background(), p1)
+	suite.col.InsertOne(context.Background(), p2)
 }
 
 func (suite *PitchingPlayerTestSuite) TearDownTest() {
 	// teardown
-	col := db.GetPitchingPlayerCollection()
-	col.DeleteMany(context.Background(), bson.M{})
+	suite.col.DeleteMany(context.Background(), bson.M{})
 }
 
 func (suite *PitchingPlayerTestSuite) TestGetPitchingPlayerByName() {
@@ -106,7 +108,8 @@ func (suite *PitchingPlayerTestSuite) TestCreatePitchingPlayer() {
 
 func (suite *PitchingPlayerTestSuite) TestUpdatePitchingPlayer() {
 	assert := assert.New(suite.T())
-	player := models.GetPitchingPlayerByName("test")
+	var player models.PitchingPlayer
+	suite.col.FindOne(context.Background(), bson.M{"name": "test"}).Decode(&player)
 	player.IP = 1.0
 	models.UpdatePitchingPlayer(player)
 	player = models.GetPitchingPlayerByName("test")
