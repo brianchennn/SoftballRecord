@@ -7,7 +7,7 @@ http://localhost:3000/SoftballRecord
 
 1. 進去網頁後，先輸入球隊名稱
 
-![image](https://github.com/brianchennn/SoftballRecord/assets/46628572/87d0234e-123b-4937-b65f-4abd7830e233)
+![image](https://github.com/brianchennn/SoftballRecord/assets/46628572/9d71c178-755f-4737-9e62-22fc4eb4f9cb)
 
 2. 開始本場比賽的紀錄，按鈕對應到以下功能:
   - Change: 換場 (目前必須手動按)
@@ -16,7 +16,8 @@ http://localhost:3000/SoftballRecord
   - 送出: 此打席的結果
   - Undo: 輸入錯誤時可以按
   
-![image](https://github.com/brianchennn/SoftballRecord/assets/46628572/47fea351-14f3-441c-a0c9-4ed3ee6a1db6)
+![image](https://github.com/brianchennn/SoftballRecord/assets/46628572/0e54f472-5e6c-4336-85db-352b0c914407)
+
 # 與 Discord 連結
 - 使用 webhook
 
