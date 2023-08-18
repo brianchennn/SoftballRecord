@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+    "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"softball_record/db"
@@ -23,55 +24,61 @@ type Team struct {
 	EP          string `json:"ep,omitempty"`
 }
 
-func CreateTeam(name string) string {
+func CreateTeam(name string) (string, error) {
 	team := Team{Name: name}
 	col := db.GetTeamCollection()
 	res, err := col.InsertOne(context.Background(), team)
 	if err != nil {
-		return ""
+		return "", err
 	}
-	return res.InsertedID.(primitive.ObjectID).Hex()
+	return res.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func GetAllTeams() []Team {
+func GetAllTeams() ([]Team, error) {
 	col := db.GetTeamCollection()
 	var teams []Team
 	cur, err := col.Find(context.Background(), bson.M{})
 	if err != nil {
-		return teams
+		return teams, err
 	}
 	for cur.Next(context.Background()) {
 		var team Team
 		err := cur.Decode(&team)
 		if err != nil {
-			return teams
+            if err == mongo.ErrNoDocuments {
+                return teams, nil
+            }
+            return teams, err
 		}
 		teams = append(teams, team)
 	}
-	return teams
+	return teams, nil
 }
 
-func GetTeamByName(name string) Team {
+func GetTeamByName(name string) (Team, error) {
 	col := db.GetTeamCollection()
 	var team Team
-	col.FindOne(context.Background(), bson.M{"name": name}).Decode(&team)
-	return team
+    err := col.FindOne(context.Background(), bson.M{"name": name}).Decode(&team)
+    if err != nil {
+        return team, err
+    }
+	return team, nil
 }
 
-func UpdateTeam(name string, data bson.M) bool {
+func UpdateTeam(name string, data bson.M) error {
 	col := db.GetTeamCollection()
 	_, err := col.UpdateOne(context.Background(), bson.M{"name": name}, bson.M{"$set": data})
 	if err != nil {
-		return false
+		return err
 	}
-	return true
+	return nil
 }
 
-func DeleteTeam(name string) bool {
+func DeleteTeam(name string) error {
 	col := db.GetTeamCollection()
 	_, err := col.DeleteOne(context.Background(), bson.M{"name": name})
 	if err != nil {
-		return false
+		return err
 	}
-	return true
+	return nil
 }

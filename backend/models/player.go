@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+    "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"softball_record/db"
@@ -60,32 +61,38 @@ func (h HittingPlayer) GetOPS() float64 {
 	return h.GetOBP() + h.GetSLG()
 }
 
-func GetAllHittingPlayers() []HittingPlayer {
+func GetAllHittingPlayers() ([]HittingPlayer, error) {
 	col := db.GetHittingPlayerCollection()
 	var players []HittingPlayer
 	cur, err := col.Find(context.Background(), bson.M{})
 	if err != nil {
-		return players
+		return players, err
 	}
 	for cur.Next(context.Background()) {
 		var player HittingPlayer
 		err := cur.Decode(&player)
-		if err != nil {
-			return players
-		}
+        if err != nil {
+            if err == mongo.ErrNoDocuments {
+                return players, nil
+            }
+            return players, err
+        }
 		players = append(players, player)
 	}
-	return players
+	return players, nil
 }
 
-func GetHittingPlayerByName(name string) HittingPlayer {
+func GetHittingPlayerByName(name string) (HittingPlayer, error) {
 	col := db.GetHittingPlayerCollection()
 	var player HittingPlayer
-	col.FindOne(context.Background(), bson.M{"name": name}).Decode(&player)
-	return player
+    err := col.FindOne(context.Background(), bson.M{"name": name}).Decode(&player)
+    if err != nil {
+        return player, err
+    }
+    return player, nil
 }
 
-func CreateHittingPlayer(name string) string {
+func CreateHittingPlayer(name string) (string, error) {
 	h := HittingPlayer{
 		Name:    name,
 		Games:   0,
@@ -103,14 +110,14 @@ func CreateHittingPlayer(name string) string {
 	col := db.GetHittingPlayerCollection()
 	res, err := col.InsertOne(context.Background(), h)
 	if err != nil {
-		return ""
+		return "", err
 	}
-	return res.InsertedID.(primitive.ObjectID).Hex()
+	return res.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func UpdateHittingPlayer(player HittingPlayer) HittingPlayer {
+func UpdateHittingPlayer(player HittingPlayer) (HittingPlayer, error) {
 	col := db.GetHittingPlayerCollection()
-	col.UpdateOne(context.Background(), bson.M{"name": player.Name}, bson.M{
+    _, err := col.UpdateOne(context.Background(), bson.M{"name": player.Name}, bson.M{
 		"$set": bson.M{
 			"games":   player.Games,
 			"ab":      player.AB,
@@ -125,7 +132,10 @@ func UpdateHittingPlayer(player HittingPlayer) HittingPlayer {
 			"so":      player.SO,
 		},
 	})
-	return player
+    if err != nil {
+        return player, err
+    }
+	return player, nil
 }
 
 // pitching player methods
@@ -141,32 +151,38 @@ func (p PitchingPlayer) GetAVG() float64 {
 	return float64(p.Hits) / float64(p.IP)
 }
 
-func GetAllPitchingPlayers() []PitchingPlayer {
+func GetAllPitchingPlayers() ([]PitchingPlayer, error) {
 	col := db.GetPitchingPlayerCollection()
 	var players []PitchingPlayer
 	cur, err := col.Find(context.Background(), bson.M{})
 	if err != nil {
-		return players
+		return players, err
 	}
 	for cur.Next(context.Background()) {
 		var player PitchingPlayer
 		err := cur.Decode(&player)
 		if err != nil {
-			return players
+            if err == mongo.ErrNoDocuments {
+                return players, nil
+            }
+            return players, err
 		}
 		players = append(players, player)
 	}
-	return players
+	return players, nil
 }
 
-func GetPitchingPlayerByName(name string) PitchingPlayer {
+func GetPitchingPlayerByName(name string) (PitchingPlayer, error) {
 	col := db.GetPitchingPlayerCollection()
 	var player PitchingPlayer
-	col.FindOne(context.Background(), bson.M{"name": name}).Decode(&player)
-	return player
+    err := col.FindOne(context.Background(), bson.M{"name": name}).Decode(&player)
+    if err != nil {
+        return player, err
+    }
+	return player, nil
 }
 
-func CreatePitchingPlayer(name string) string {
+func CreatePitchingPlayer(name string) (string, error) {
 	p := PitchingPlayer{
 		Name:   name,
 		Games:  0,
@@ -183,14 +199,14 @@ func CreatePitchingPlayer(name string) string {
 	col := db.GetPitchingPlayerCollection()
 	res, err := col.InsertOne(context.Background(), p)
 	if err != nil {
-		return ""
+		return "", err
 	}
-	return res.InsertedID.(primitive.ObjectID).Hex()
+	return res.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func UpdatePitchingPlayer(player PitchingPlayer) PitchingPlayer {
+func UpdatePitchingPlayer(player PitchingPlayer) (PitchingPlayer, error) {
 	col := db.GetPitchingPlayerCollection()
-	col.UpdateOne(context.Background(), bson.M{"name": player.Name}, bson.M{
+    _, err := col.UpdateOne(context.Background(), bson.M{"name": player.Name}, bson.M{
 		"$set": bson.M{
 			"games":  player.Games,
 			"wins":   player.Wins,
@@ -204,5 +220,8 @@ func UpdatePitchingPlayer(player PitchingPlayer) PitchingPlayer {
 			"so":     player.SO,
 		},
 	})
-	return player
+    if err != nil {
+        return player, err
+    }
+	return player, nil
 }

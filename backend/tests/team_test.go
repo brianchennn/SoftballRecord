@@ -35,17 +35,17 @@ func (suite *TeamTestSuite) TearDownTest() {
 }
 
 func (suite *TeamTestSuite) TestCreateTeam() {
-	id := models.CreateTeam("Team3")
+	id, _ := models.CreateTeam("Team3")
 	assert.NotEqual(suite.T(), "", id)
 }
 
 func (suite *TeamTestSuite) TestGetAllTeams() {
-	teams := models.GetAllTeams()
+	teams, _ := models.GetAllTeams()
 	assert.Equal(suite.T(), 2, len(teams))
 }
 
 func (suite *TeamTestSuite) TestGetTeamByName() {
-	team := models.GetTeamByName("Team1")
+	team, _ := models.GetTeamByName("Team1")
 	assert.Equal(suite.T(), "Team1", team.Name)
 }
 

@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+    "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"softball_record/db"
@@ -20,9 +21,16 @@ type Record struct {
 	Runs     int    `json:"runs"`
 }
 
+type GameMeta struct {
+    HomeTeam string `json:"home_team"`
+    AwayTeam string `json:"away_team"`
+    Date time.Time `json:"date"`
+    Location string `json:"location"`
+}
+
 type Game struct {
-	HomeTeam  string    `json:"home_team"` // objectid
-	AwayTeam  string    `json:"away_team"` // objectid
+	HomeTeam  string    `json:"home_team"`
+	AwayTeam  string    `json:"away_team"`
 	HomeScore int       `json:"home_score"`
 	AwayScore int       `json:"away_score"`
 	Date      time.Time `json:"date"`
@@ -30,43 +38,49 @@ type Game struct {
 	Records   []Record  `json:"records"`
 }
 
-func CreateGame(home string, guest string, date time.Time, location string) string {
+func CreateGame(home string, away string, date time.Time, location string) (string, error) {
 	col := db.GetGameCollection()
-	game := Game{home, guest, 0, 0, date, location, []Record{}}
+	game := Game{home, away, 0, 0, date, location, []Record{}}
 	res, err := col.InsertOne(context.Background(), game)
 	if err != nil {
-		return ""
+		return "", err
 	}
-	return res.InsertedID.(primitive.ObjectID).Hex()
+	return res.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func GetGame(id string) Game {
+func GetGame(id string) (Game, error) {
 	col := db.GetGameCollection()
 	var game Game
 	objID, _ := primitive.ObjectIDFromHex(id)
-	col.FindOne(context.Background(), primitive.M{"_id": objID}).Decode(&game)
-	return game
+    err := col.FindOne(context.Background(), bson.M{"_id": objID}).Decode(&game)
+    if err != nil {
+        return game, err
+    }
+    return game, nil
 }
 
-func GetAllGames() []Game {
+func GetAllGames() ([]Game, error) {
 	col := db.GetGameCollection()
 	var games []Game
 	cur, err := col.Find(context.Background(), bson.M{})
 	if err != nil {
-		return games
+		return games, err
 	}
 	for cur.Next(context.Background()) {
 		var game Game
 		err := cur.Decode(&game)
 		if err != nil {
-			return games
+            if err == mongo.ErrNoDocuments {
+                return games, nil
+            }
+            return games, err
 		}
 		games = append(games, game)
 	}
-	return games
+	return games, nil
 }
 
-func AddRecord(gameID string, record Record) bool {
+func AddRecord(gameID string, record Record) error {
 	col := db.GetGameCollection()
 	_, err := col.UpdateOne(context.Background(), bson.M{"_id": gameID}, bson.M{
 		"$push": bson.M{
@@ -74,20 +88,20 @@ func AddRecord(gameID string, record Record) bool {
 		},
 	})
 	if err != nil {
-		return false
+		return err
 	}
-	return true
+	return nil
 }
 
-func UpdateRecords(gameID string, records []Record) bool {
+func UpdateRecords(gameID string, records []Record) error {
 	col := db.GetGameCollection()
 	_, err := col.UpdateOne(context.Background(), bson.M{"_id": gameID}, bson.M{
 		"$set": bson.M{
 			"records": records,
 		},
 	})
-	if err != nil {
-		return false
-	}
-	return true
+    if err != nil {
+        return err
+    }
+    return nil
 }

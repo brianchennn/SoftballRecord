@@ -40,19 +40,19 @@ func (suite *HittingPlayerTestSuite) TearDownTest() {
 
 func (suite *HittingPlayerTestSuite) TestGetHittingPlayerByName() {
 	assert := assert.New(suite.T())
-	player := models.GetHittingPlayerByName("test")
+	player, _ := models.GetHittingPlayerByName("test")
 	assert.Equal(player.Name, "test")
 }
 
 func (suite *HittingPlayerTestSuite) TestGetAllHittingPlayers() {
 	assert := assert.New(suite.T())
-	players := models.GetAllHittingPlayers()
+	players, _ := models.GetAllHittingPlayers()
 	assert.Equal(len(players), 2)
 }
 
 func (suite *HittingPlayerTestSuite) TestCreateHittingPlayer() {
 	assert := assert.New(suite.T())
-	id := models.CreateHittingPlayer("test3")
+	id, _ := models.CreateHittingPlayer("test3")
 	assert.NotEqual(id, "")
 }
 
@@ -62,7 +62,7 @@ func (suite *HittingPlayerTestSuite) TestUpdateHittingPlayer() {
 	suite.col.FindOne(context.Background(), bson.M{"name": "test"}).Decode(&player)
 	player.AB = 1
 	models.UpdateHittingPlayer(player)
-	player = models.GetHittingPlayerByName("test")
+	player, _ = models.GetHittingPlayerByName("test")
 	assert.Equal(player.AB, 1)
 }
 
@@ -98,19 +98,19 @@ func (suite *PitchingPlayerTestSuite) TearDownTest() {
 
 func (suite *PitchingPlayerTestSuite) TestGetPitchingPlayerByName() {
 	assert := assert.New(suite.T())
-	player := models.GetPitchingPlayerByName("test")
+	player, _ := models.GetPitchingPlayerByName("test")
 	assert.Equal(player.Name, "test")
 }
 
 func (suite *PitchingPlayerTestSuite) TestGetAllPitchingPlayers() {
 	assert := assert.New(suite.T())
-	players := models.GetAllPitchingPlayers()
+	players, _ := models.GetAllPitchingPlayers()
 	assert.Equal(len(players), 2)
 }
 
 func (suite *PitchingPlayerTestSuite) TestCreatePitchingPlayer() {
 	assert := assert.New(suite.T())
-	id := models.CreatePitchingPlayer("test3")
+	id, _ := models.CreatePitchingPlayer("test3")
 	assert.NotEqual(id, "")
 }
 
@@ -120,7 +120,7 @@ func (suite *PitchingPlayerTestSuite) TestUpdatePitchingPlayer() {
 	suite.col.FindOne(context.Background(), bson.M{"name": "test"}).Decode(&player)
 	player.IP = 1.0
 	models.UpdatePitchingPlayer(player)
-	player = models.GetPitchingPlayerByName("test")
+	player, _ = models.GetPitchingPlayerByName("test")
 	assert.Equal(player.IP, 1.0)
 }
 
