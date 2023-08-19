@@ -8,6 +8,10 @@ import (
 	"softball_record/db"
 )
 
+type PlayerMeta struct {
+	Name string `bson:"name" json:"name"`
+}
+
 type HittingPlayer struct {
 	Name    string `bson:"name" json:"name"`
 	Games   int    `bson:"games" json:"games"`
@@ -108,27 +112,15 @@ func CreateHittingPlayer(name string) (string, error) {
 	return res.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func UpdateHittingPlayer(player HittingPlayer) (HittingPlayer, error) {
+func UpdateHittingPlayer(data bson.M) (HittingPlayer, error) {
 	col := db.GetHittingPlayerCollection()
-	_, err := col.UpdateOne(context.Background(), bson.M{"name": player.Name}, bson.M{
-		"$set": bson.M{
-			"games":   player.Games,
-			"ab":      player.AB,
-			"runs":    player.Runs,
-			"hits":    player.Hits,
-			"doubles": player.Doubles,
-			"triples": player.Triples,
-			"hr":      player.HR,
-			"sf":      player.SF,
-			"rbi":     player.RBI,
-			"bb":      player.BB,
-			"so":      player.SO,
-		},
-	})
+	var player HittingPlayer
+	err := col.FindOneAndUpdate(context.Background(), bson.M{"name": data["name"]}, bson.M{"$set": data}).Decode(&player)
 	if err != nil {
 		return player, err
+	} else {
+		return player, nil
 	}
-	return player, nil
 }
 
 // pitching player methods
@@ -197,24 +189,13 @@ func CreatePitchingPlayer(name string) (string, error) {
 	return res.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func UpdatePitchingPlayer(player PitchingPlayer) (PitchingPlayer, error) {
+func UpdatePitchingPlayer(data bson.M) (PitchingPlayer, error) {
 	col := db.GetPitchingPlayerCollection()
-	_, err := col.UpdateOne(context.Background(), bson.M{"name": player.Name}, bson.M{
-		"$set": bson.M{
-			"games":  player.Games,
-			"wins":   player.Wins,
-			"losses": player.Losses,
-			"ip":     player.IP,
-			"hits":   player.Hits,
-			"runs":   player.Runs,
-			"er":     player.ER,
-			"hr":     player.HR,
-			"bb":     player.BB,
-			"so":     player.SO,
-		},
-	})
+	var player PitchingPlayer
+	err := col.FindOneAndUpdate(context.Background(), bson.M{"name": data["name"]}, bson.M{"$set": data}).Decode(&player)
 	if err != nil {
 		return player, err
+	} else {
+		return player, nil
 	}
-	return player, nil
 }

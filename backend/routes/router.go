@@ -9,5 +9,6 @@ func InitRouter() *gin.Engine {
 	group := router.Group("/api")
 	InitGameRoutes(group)
 	InitTeamRoutes(group)
+	InitPlayerRoutes(group)
 	return router
 }

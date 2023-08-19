@@ -58,10 +58,10 @@ func (suite *HittingPlayerTestSuite) TestCreateHittingPlayer() {
 
 func (suite *HittingPlayerTestSuite) TestUpdateHittingPlayer() {
 	assert := assert.New(suite.T())
+	data := bson.M{"name": "test", "ab": 1}
 	var player models.HittingPlayer
 	suite.col.FindOne(context.Background(), bson.M{"name": "test"}).Decode(&player)
-	player.AB = 1
-	models.UpdateHittingPlayer(player)
+	models.UpdateHittingPlayer(data)
 	player, _ = models.GetHittingPlayerByName("test")
 	assert.Equal(player.AB, 1)
 }
@@ -117,9 +117,9 @@ func (suite *PitchingPlayerTestSuite) TestCreatePitchingPlayer() {
 func (suite *PitchingPlayerTestSuite) TestUpdatePitchingPlayer() {
 	assert := assert.New(suite.T())
 	var player models.PitchingPlayer
+	data := bson.M{"name": "test", "ip": 1.0}
 	suite.col.FindOne(context.Background(), bson.M{"name": "test"}).Decode(&player)
-	player.IP = 1.0
-	models.UpdatePitchingPlayer(player)
+	models.UpdatePitchingPlayer(data)
 	player, _ = models.GetPitchingPlayerByName("test")
 	assert.Equal(player.IP, 1.0)
 }
