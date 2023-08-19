@@ -11,7 +11,7 @@ import (
 
 type Record struct {
 	Team     string `bson:"team" json:"team"`
-    Player   string `bson:"player" json:"player"` // objectid
+	Player   string `bson:"player" json:"player"` // objectid
 	Number   int    `bson:"number" json:"number"`
 	Order    int    `bson:"order" json:"order"`
 	Position int    `bson:"position" json:"position"`
@@ -39,14 +39,14 @@ type Game struct {
 }
 
 type GameResponse struct {
-    ID        string    `bson:"_id" json:"id"`
-    HomeTeam  string    `bson:"home_team" json:"home_team"`
-    AwayTeam  string    `bson:"away_team" json:"away_team"`
-    HomeScore int       `bson:"home_score" json:"home_score"`
-    AwayScore int       `bson:"away_score" json:"away_score"`
-    Date      time.Time `bson:"date" json:"date"`
-    Location  string    `bson:"location" json:"location"`
-    Records   []Record  `bson:"records" json:"records"`
+	ID        string    `bson:"_id" json:"id"`
+	HomeTeam  string    `bson:"home_team" json:"home_team"`
+	AwayTeam  string    `bson:"away_team" json:"away_team"`
+	HomeScore int       `bson:"home_score" json:"home_score"`
+	AwayScore int       `bson:"away_score" json:"away_score"`
+	Date      time.Time `bson:"date" json:"date"`
+	Location  string    `bson:"location" json:"location"`
+	Records   []Record  `bson:"records" json:"records"`
 }
 
 func CreateGame(home string, away string, date time.Time, location string) (string, error) {

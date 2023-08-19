@@ -1,21 +1,21 @@
 package routes
 
 import (
-    "time"
 	"github.com/gin-gonic/gin"
 	"softball_record/models"
+	"time"
 )
 
 func CreateGameRoutes(c *gin.Context) {
 	game := models.GameMeta{}
 	err := c.BindJSON(&game)
 	if err != nil {
-        c.JSON(400, gin.H{"result": "error", "message": err.Error()})
+		c.JSON(400, gin.H{"result": "error", "message": err.Error()})
 		return
 	}
-    if game.Date.IsZero() {
-        game.Date = time.Now()
-    }
+	if game.Date.IsZero() {
+		game.Date = time.Now()
+	}
 	id, err := models.CreateGame(game.HomeTeam, game.AwayTeam, game.Date, game.Location)
 	if err != nil {
 		c.JSON(500, gin.H{"result": "error", "message": err.Error()})
@@ -48,7 +48,7 @@ func AddRecordRoutes(c *gin.Context) {
 	record := models.Record{}
 	err := c.BindJSON(&record)
 	if err != nil {
-        c.JSON(400, gin.H{"result": "error", "message": err.Error()})
+		c.JSON(400, gin.H{"result": "error", "message": err.Error()})
 		return
 	}
 	err = models.AddRecord(id, record)
@@ -64,7 +64,7 @@ func UpdateRecordsRoutes(c *gin.Context) {
 	records := []models.Record{}
 	err := c.BindJSON(&records)
 	if err != nil {
-        c.JSON(400, gin.H{"result": "error", "message": err.Error()})
+		c.JSON(400, gin.H{"result": "error", "message": err.Error()})
 		return
 	}
 	err = models.UpdateRecords(id, records)

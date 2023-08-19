@@ -8,6 +8,10 @@ import (
 	"softball_record/db"
 )
 
+type TeamMeta struct {
+	Name string `bson:"name" json:"name"`
+}
+
 type Team struct {
 	Name string `bson:"name" json:"name"`
 	// using objectid
