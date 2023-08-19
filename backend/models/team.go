@@ -2,26 +2,26 @@ package models
 
 import (
 	"context"
-    "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"softball_record/db"
 )
 
 type Team struct {
-	Name string `json:"name"`
+	Name string `bson:"name" json:"name"`
 	// using objectid
-	Pitcher     string `json:"pitcher"`
-	Catcher     string `json:"catcher"`
-	FirstBase   string `json:"first_base"`
-	SecondBase  string `json:"second_base"`
-	ThirdBase   string `json:"third_base"`
-	ShortStop   string `json:"short_stop"`
-	LeftField   string `json:"left_field"`
-	CenterField string `json:"center_field"`
-	RightField  string `json:"right_field"`
-	Free        string `json:"free"`
-	EP          string `json:"ep,omitempty"`
+	Pitcher     string `bson:"pitcher" json:"pitcher"`
+	Catcher     string `bson:"catcher" json:"catcher"`
+	FirstBase   string `bson:"first_base" json:"first_base"`
+	SecondBase  string `bson:"second_base" json:"second_base"`
+	ThirdBase   string `bson:"third_base" json:"third_base"`
+	ShortStop   string `bson:"short_stop" json:"short_stop"`
+	LeftField   string `bson:"left_field" json:"left_field"`
+	CenterField string `bson:"center_field" json:"center_field"`
+	RightField  string `bson:"right_field" json:"right_field"`
+	Free        string `bson:"free" json:"free"`
+	EP          string `bson:"ep,omitempty" json:"ep,omitempty"`
 }
 
 func CreateTeam(name string) (string, error) {
@@ -45,10 +45,10 @@ func GetAllTeams() ([]Team, error) {
 		var team Team
 		err := cur.Decode(&team)
 		if err != nil {
-            if err == mongo.ErrNoDocuments {
-                return teams, nil
-            }
-            return teams, err
+			if err == mongo.ErrNoDocuments {
+				return teams, nil
+			}
+			return teams, err
 		}
 		teams = append(teams, team)
 	}
@@ -58,10 +58,10 @@ func GetAllTeams() ([]Team, error) {
 func GetTeamByName(name string) (Team, error) {
 	col := db.GetTeamCollection()
 	var team Team
-    err := col.FindOne(context.Background(), bson.M{"name": name}).Decode(&team)
-    if err != nil {
-        return team, err
-    }
+	err := col.FindOne(context.Background(), bson.M{"name": name}).Decode(&team)
+	if err != nil {
+		return team, err
+	}
 	return team, nil
 }
 

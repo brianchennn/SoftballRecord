@@ -2,46 +2,39 @@ package models
 
 import (
 	"context"
-    "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"softball_record/db"
 )
 
 type HittingPlayer struct {
-	Name    string `json:"name"`
-	Games   int    `json:"games"`
-	AB      int    `json:"ab"`
-	Runs    int    `json:"runs"`
-	Hits    int    `json:"hits"`
-	Doubles int    `json:"doubles"`
-	Triples int    `json:"triples"`
-	HR      int    `json:"hr"`
-	SF      int    `json:"sf"`
-	RBI     int    `json:"rbi"`
-	BB      int    `json:"bb"`
-	SO      int    `json:"so"`
-	//AVG float64 `json:"avg"`
-	//OBP float64 `json:"obp"`
-	//SLG float64 `json:"slg"`
-	//OPS float64 `json:"ops"`
+	Name    string `bson:"name" json:"name"`
+	Games   int    `bson:"games" json:"games"`
+	AB      int    `bson:"ab" json:"ab"`
+	Runs    int    `bson:"runs" json:"runs"`
+	Hits    int    `bson:"hits" json:"hits"`
+	Doubles int    `bson:"doubles" json:"doubles"`
+	Triples int    `bson:"triples" json:"triples"`
+	HR      int    `bson:"hr" json:"hr"`
+	SF      int    `bson:"sf" json:"sf"`
+	RBI     int    `bson:"rbi" json:"rbi"`
+	BB      int    `bson:"bb" json:"bb"`
+	SO      int    `bson:"so" json:"so"`
 }
 
 type PitchingPlayer struct {
-	Name   string  `json:"name"`
-	Games  int     `json:"games"`
-	Wins   int     `json:"wins"`
-	Losses int     `json:"losses"`
-	IP     float64 `json:"ip"`
-	Hits   int     `json:"hits"`
-	Runs   int     `json:"runs"`
-	ER     int     `json:"er"`
-	HR     int     `json:"hr"`
-	BB     int     `json:"bb"`
-	SO     int     `json:"so"`
-	//WHIP float64 `json:"whip"`
-	//ERA float64 `json:"era"`
-	//AVG float64 `json:"avg"`
+	Name   string  `bson:"name" json:"name"`
+	Games  int     `bson:"games" json:"games"`
+	Wins   int     `bson:"wins" json:"wins"`
+	Losses int     `bson:"losses" json:"losses"`
+	IP     float64 `bson:"ip" json:"ip"`
+	Hits   int     `bson:"hits" json:"hits"`
+	Runs   int     `bson:"runs" json:"runs"`
+	ER     int     `bson:"er" json:"er"`
+	HR     int     `bson:"hr" json:"hr"`
+	BB     int     `bson:"bb" json:"bb"`
+	SO     int     `bson:"so" json:"so"`
 }
 
 // hitting player methods
@@ -71,12 +64,12 @@ func GetAllHittingPlayers() ([]HittingPlayer, error) {
 	for cur.Next(context.Background()) {
 		var player HittingPlayer
 		err := cur.Decode(&player)
-        if err != nil {
-            if err == mongo.ErrNoDocuments {
-                return players, nil
-            }
-            return players, err
-        }
+		if err != nil {
+			if err == mongo.ErrNoDocuments {
+				return players, nil
+			}
+			return players, err
+		}
 		players = append(players, player)
 	}
 	return players, nil
@@ -85,11 +78,11 @@ func GetAllHittingPlayers() ([]HittingPlayer, error) {
 func GetHittingPlayerByName(name string) (HittingPlayer, error) {
 	col := db.GetHittingPlayerCollection()
 	var player HittingPlayer
-    err := col.FindOne(context.Background(), bson.M{"name": name}).Decode(&player)
-    if err != nil {
-        return player, err
-    }
-    return player, nil
+	err := col.FindOne(context.Background(), bson.M{"name": name}).Decode(&player)
+	if err != nil {
+		return player, err
+	}
+	return player, nil
 }
 
 func CreateHittingPlayer(name string) (string, error) {
@@ -117,7 +110,7 @@ func CreateHittingPlayer(name string) (string, error) {
 
 func UpdateHittingPlayer(player HittingPlayer) (HittingPlayer, error) {
 	col := db.GetHittingPlayerCollection()
-    _, err := col.UpdateOne(context.Background(), bson.M{"name": player.Name}, bson.M{
+	_, err := col.UpdateOne(context.Background(), bson.M{"name": player.Name}, bson.M{
 		"$set": bson.M{
 			"games":   player.Games,
 			"ab":      player.AB,
@@ -132,9 +125,9 @@ func UpdateHittingPlayer(player HittingPlayer) (HittingPlayer, error) {
 			"so":      player.SO,
 		},
 	})
-    if err != nil {
-        return player, err
-    }
+	if err != nil {
+		return player, err
+	}
 	return player, nil
 }
 
@@ -162,10 +155,10 @@ func GetAllPitchingPlayers() ([]PitchingPlayer, error) {
 		var player PitchingPlayer
 		err := cur.Decode(&player)
 		if err != nil {
-            if err == mongo.ErrNoDocuments {
-                return players, nil
-            }
-            return players, err
+			if err == mongo.ErrNoDocuments {
+				return players, nil
+			}
+			return players, err
 		}
 		players = append(players, player)
 	}
@@ -175,10 +168,10 @@ func GetAllPitchingPlayers() ([]PitchingPlayer, error) {
 func GetPitchingPlayerByName(name string) (PitchingPlayer, error) {
 	col := db.GetPitchingPlayerCollection()
 	var player PitchingPlayer
-    err := col.FindOne(context.Background(), bson.M{"name": name}).Decode(&player)
-    if err != nil {
-        return player, err
-    }
+	err := col.FindOne(context.Background(), bson.M{"name": name}).Decode(&player)
+	if err != nil {
+		return player, err
+	}
 	return player, nil
 }
 
@@ -206,7 +199,7 @@ func CreatePitchingPlayer(name string) (string, error) {
 
 func UpdatePitchingPlayer(player PitchingPlayer) (PitchingPlayer, error) {
 	col := db.GetPitchingPlayerCollection()
-    _, err := col.UpdateOne(context.Background(), bson.M{"name": player.Name}, bson.M{
+	_, err := col.UpdateOne(context.Background(), bson.M{"name": player.Name}, bson.M{
 		"$set": bson.M{
 			"games":  player.Games,
 			"wins":   player.Wins,
@@ -220,8 +213,8 @@ func UpdatePitchingPlayer(player PitchingPlayer) (PitchingPlayer, error) {
 			"so":     player.SO,
 		},
 	})
-    if err != nil {
-        return player, err
-    }
+	if err != nil {
+		return player, err
+	}
 	return player, nil
 }
