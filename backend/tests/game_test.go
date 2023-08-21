@@ -44,19 +44,19 @@ func (suite *GameTestSuite) TearDownTest() {
 
 func (suite *GameTestSuite) TestGetGame() {
 	assert := assert.New(suite.T())
-	game := models.GetGame(suite.g1_id)
+	game, _ := models.GetGame(suite.g1_id)
 	assert.Equal(game.HomeTeam, "home1")
 }
 
 func (suite *GameTestSuite) TestGetAllGames() {
 	assert := assert.New(suite.T())
-	games := models.GetAllGames()
+	games, _ := models.GetAllGames()
 	assert.Equal(len(games), 2)
 }
 
 func (suite *GameTestSuite) TestCreateGame() {
 	assert := assert.New(suite.T())
-	id := models.CreateGame("home3", "away3", time.Now(), "stadium1")
+	id, _ := models.CreateGame("home3", "away3", time.Now(), "stadium1")
 	assert.NotEqual(id, "")
 }
 
